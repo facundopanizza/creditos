@@ -11,9 +11,7 @@
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', 'UsersController@index');
 
 Route::get('/users', 'UsersController@index');
 Route::get('/users/{user}/cash_allocation', 'CashAllocationController@create');
