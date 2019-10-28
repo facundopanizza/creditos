@@ -7,6 +7,7 @@
         <thead>
             <tr>
                 <th scope="col">Numero Actividad</th>
+                <th scope="col">Cliente</th>
                 <th scope="col">Tipo de Actividad</th>
                 <th scope="col">Plata</th>
                 <th scope="col">Fecha</th>
@@ -28,6 +29,7 @@
                         ?>
                         <tr>
                             <td>{{ $share->payment->id }}</td>
+                            <td>{{ $credit->client->first_name . ' ' . $credit->client->last_name }}</td>
                             <td>Pago de Cuota</td>
                             <td>+{{ $share->payment->payment_amount }}</td>
                             <td>{{ $share->payment->created_at }}</td>
@@ -45,6 +47,7 @@
                 ?>
                 <tr>
                     <td>{{ $credit->id }}</td>
+                    <td>{{ $credit->client->first_name . ' ' . $credit->client->last_name }}</td>
                     <td>Prestamo</td>
                     <td>-{{ $credit->money }}</td>
                     <td>{{ $credit->created_at }}</td>
@@ -60,6 +63,7 @@
                 ?>
                 <tr>
                     <td>{{ $cash_allocation->id }}</td>
+                    <td></td>
                     <td>Plata Entregada</td>
                     <td>+{{ $cash_allocation->money }}</td>
                     <td>{{ $cash_allocation->created_at }}</td>
