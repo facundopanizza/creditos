@@ -53,6 +53,10 @@ class SharePaymentsController extends Controller
                 'payment_amount' => $validated['payment_amount']
             ]);
         }
+
+        $id = $share->credit->id;
+        
+        return redirect("/credits/$id");
     }
 
     /**
