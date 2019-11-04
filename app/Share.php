@@ -10,7 +10,7 @@ class Share extends Model
         return $this->belongsTo('App\Credit');
     }
 
-    public function payment() {
-        return $this->hasOne('App\SharePayment');
+    public function payments() {
+        return $this->hasMany('App\SharePayment');
     }
 }

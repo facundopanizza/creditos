@@ -44,7 +44,8 @@ class CreditsController extends Controller
             'client_id' => ['required', 'integer'],
             'money' => ['required', 'numeric'],
             'interest_rate' => ['required', 'numeric'],
-            'period' => ['required', 'regex:/30|4|2|1/'],
+            'daily' => ['required', 'regex:/21|28|42|56/'],
+            'period' => ['required', 'regex:/1|7|14|28/'],
         ]);
 
         $expiration_date = Carbon::now();
@@ -54,17 +55,50 @@ class CreditsController extends Controller
         $credit->client_id = $validated['client_id'];
         $credit->seller_id = auth()->user()->id;
         $credit->money = $validated['money'];
-        $credit->interest_rate = $validated['interest_rate'];
-        $credit->period = $validated['period'];
-        $credit->profit = ($validated['money'] * $validated['interest_rate']) / 100;
-        $credit->expiration_date = $expiration_date->addDays(30);
+        $credit->interest_rate = ($validated['interest_rate'] / 28) * $request['daily'];
+        $credit->period = $validated['period'] == 1 ? $validated['daily'] : $validated['period'];
+        $credit->profit = ($validated['money'] * $credit->interest_rate) / 100;
+        $credit->expiration_date = $expiration_date->addDays($validated['daily']);
 
         $credit->save();
+        
+        if($validated['period'] == 1) {
+            switch($validated['daily']) {
+                case 21:
+                    $shares = 21 - 6;
+                    break;
+                case 28:
+                    $shares = 28 - 8;
+                    break;
+                case 42:
+                    $shares = 42 - 12;
+                    break;
+                case 56:
+                    $shares = 56 - 16;
+            }
+        } else {
+            $shares = $validated['daily'] / $credit->period;
+        }
 
-        for($i = 0; $i < $credit->period; $i++) {
+            $share_expiration =  Carbon::now();
+            $today = Carbon::now();
+        for($i = 0; $i < $shares; $i++) {
+            if($i == 0) {
+                if($today->isoFormat('dddd') == 'Saturday' || $today->isoFormat('dddd') == 'Sunday') {
+                    while($share_expiration->isoFormat('dddd') == 'Saturday' || $share_expiration->isoFormat('dddd') == 'Sunday') {
+                        $share_expiration->addDays($validated['period']);
+                    }
+                }
+            } else {
+                do {
+                    $share_expiration->addDays($validated['period']);
+                } while($share_expiration->isoFormat('dddd') == 'Saturday' || $share_expiration->isoFormat('dddd') == 'Sunday');
+            }
+
             $share = new Share();
             $share->credit_id = $credit->id;
-            $share->money = ($credit->money + $credit->profit) / $credit->period;
+            $share->money = ceil(($credit->money + $credit->profit) / $shares);
+            $share->expiration_date = $share_expiration;
             $share->save();
         }
 

@@ -25,6 +25,9 @@ class SharePaymentsController extends Controller
      */
     public function create(Share $share)
     {
+        if($share->share_cancelled == 1) {
+            return redirect()->back();
+        }
         return view('share_payments.create', ['share' => $share]);
     }
 
@@ -38,18 +41,34 @@ class SharePaymentsController extends Controller
     {
         $validated = $request->validate([
             'payment_amount' => ['required'],
-            'share_id' => ['unique:share_payments']
         ]);
-        if($share->money - $validated['payment_amount'] !== 0.0) {
+
+        $id = $share->credit->id;
+
+        if($share->share_cancelled == 1) {
+            return redirect("/credits/$id");
+        }
+
+        if($share->payments->count() != 0) {
+            $payed = 0;
+
+            foreach($share->payments as $payment) {
+                $payed += $payment->payment_amount;
+            }
+        } else {
+            $payed = 0;
+        }
+
+        if(($share->money) - ($validated['payment_amount'] + $payed) == 0) {
+            $share->share_cancelled = true;
+            $share->save();
             SharePayment::create([
                 'share_id' => $share->id,
-                'fee_cancelled' => false,
                 'payment_amount' => $validated['payment_amount']
             ]);
         } else {
             SharePayment::create([
                 'share_id' => $share->id,
-                'fee_cancelled' => true,
                 'payment_amount' => $validated['payment_amount']
             ]);
         }

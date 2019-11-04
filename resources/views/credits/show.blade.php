@@ -36,20 +36,36 @@
                 @foreach($credit->shares as $share)
                 <tr>
                     <td>{{ $share->money }}</td>
-                    <td></td>
-                    <td></td>
+                    <td>{{ $share->expiration_date }} </td>
                     <td>
-                    @if(!empty($share->payment))
-                        @if($share->payment->fee_cancelled)
-                            {{ 'Pagado' }}
+                    @if(!empty($share->payments))
+                        @if($share->share_cancelled == 1)
+                            <span class="text-success">{{ 'Pagado' }}</span>
                         @else
-                            <span class="text-danger">{{ 'Debe - ' . floatval($share->money - $share->payment->payment_amount) }}</span>
+                            <?php
+                                if($share->payments->count() != 0) {
+                                    $payed = 0;
+
+                                    foreach($share->payments as $payment) {
+                                        $payed += $payment->payment_amount;
+                                    }
+                                } else {
+                                    $payed = 0;
+                                }
+                            ?>
+                            <span class="text-danger">{{ 'Debe - ' . floatval($share->money - $payed) }}</span>
                         @endif
-                    </td>
                     @else
                         <span class="text-danger">{{ 'Debe - ' . $share->money }}</span>
                     @endif
-                    <td><a class="btn btn-primary" href="/shares/{{ $share->id }}/share_payments">Informar Pago</a></td>
+                    </td>
+                    <td></td>
+                    <td>
+                        @if($share->share_cancelled == 1)
+                        @else
+                            <a class="btn btn-primary" href="/shares/{{ $share->id }}/share_payments">Informar Pago</a>
+                        @endif
+                    </td>
                 </tr>
                 @endforeach
             </tbody>

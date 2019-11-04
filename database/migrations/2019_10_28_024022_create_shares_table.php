@@ -16,7 +16,9 @@ class CreateSharesTable extends Migration
         Schema::create('shares', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->unsignedInteger('credit_id');
-            $table->unsignedDecimal('money');
+            $table->unsignedInteger('money');
+            $table->boolean('share_cancelled')->default(0);
+            $table->date('expiration_date');
             $table->timestamps();
         });
     }

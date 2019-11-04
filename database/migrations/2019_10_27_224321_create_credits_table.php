@@ -18,9 +18,9 @@ class CreateCreditsTable extends Migration
             $table->unsignedInteger('client_id');
             $table->unsignedInteger('seller_id');
             $table->date('expiration_date');
-            $table->unsignedDecimal('money');
+            $table->unsignedDecimal('money', 20, 2);
             $table->unsignedDecimal('interest_rate');
-            $table->unsignedDecimal('profit');
+            $table->unsignedDecimal('profit', 20, 2);
             $table->string('period');
             $table->timestamps();
         });

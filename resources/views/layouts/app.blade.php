@@ -38,7 +38,7 @@
                         <a class="dropdown-item" href="/clients/create">Crear</a>
                     </div>
                 </li>
-                <li class="nav-item dropdown">
+                <div class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     Creditos
                     </a>
@@ -46,8 +46,22 @@
                         <a class="dropdown-item" href="/credits">Lista de Creditos</a>
                         <a class="dropdown-item" href="/credits/create">Nuevo Credito</a>
                     </div>
-                </li>
+                </div>
             </div>
+            @guest
+            @else
+            <div class="nav-item text-light">
+                {{ Auth::user()->first_name . ' ' . Auth::user()->last_name }}
+            </div>
+            <div class="nav-item">
+                <form method="POST" action="/logout">
+                    @csrf
+                    
+                    <button type="submit" class="nav-link text-light" style="background-color: transparent; border: none">Cerrar Sesión</button>
+                </form>
+            </div>
+            @endguest
+
         </nav>
         <main class="container">
             @yield('main')

@@ -15,10 +15,8 @@ class CreateSharePaymentsTable extends Migration
     {
         Schema::create('share_payments', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->unsignedInteger('share_id')->unique;
+            $table->unsignedInteger('share_id');
             $table->unsignedDecimal('payment_amount');
-            $table->unsignedInteger('temporal_seller')->nullable();
-            $table->boolean('fee_cancelled');
             $table->timestamps();
         });
     }

@@ -52,19 +52,43 @@
                         </div>
 
                         <div class="form-group col-md-4">
+                            <label for="daily">Diarios</label>
+                            <select id="daily" class="form-control" name="daily">
+                                <option value="21">21</option>
+                                <option value="28">28</option>
+                                <option value="42">42</option>
+                                <option value="56">56</option>
+                            </select>
+                        </div>
+
+                        <div id="all" class="form-group col-md-4" style="display: none">
                             <label for="period">Período</label>
-                            <select id="period" class="form-control" name="period">
-                                <option value="30">Diario (30 Cuotas)</option>
-                                <option value="4">Semanal (4 Cuotas)</option>
-                                <option value="2">Quincenal (2 Cuotas)</option>
-                                <option value="1">Mensual (1 Cuota)</option>
+                            <select id="period-all" class="form-control" name="">
+                                <option value="1">Diario</option>
+                                <option value="7">Semanal</option>
+                                <option value="14">Quincenal</option>
+                                <option value="28">Mensual</option>
+                            </select>
+                        </div>
+
+                        <div id="weekly" class="form-group col-md-4">
+                            <label for="period">Período</label>
+                            <select id="period-weekly" class="form-control" name="period">
+                                <option value="1">Diario</option>
+                                <option value="7">Semanal</option>
                             </select>
                         </div>
                     </div>
 
-                    <div id="shareDiv" class="form-group" style="display: none">
-                        <label for="share">Valor Cuota</label>
-                        <input class="form-control" id="share" type="number" readonly>
+                    <div class="row">
+                        <div id="shareDiv" class="form-group col-md" style="display: none">
+                            <label for="share">Valor Cuota</label>
+                            <input class="form-control" id="share" type="number" readonly>
+                        </div>
+                        <div id="shares-div" class="form-group col-md" style="display: none">
+                            <label for="share">Cuotas</label>
+                            <input class="form-control" id="shares-input" type="number" readonly>
+                        </div>
                     </div>
 
                     <button type="button" id="calculate" class="btn btn-secondary mb-4">Calcular</button>
@@ -72,21 +96,81 @@
                     <button type="submit" id="submit" class="btn btn-primary" style="display: none">Crear Prestamo</button>
                 </form>
 
-
                 <script>
                     let calculate = document.querySelector('#calculate');
                     let submit = document.querySelector('#submit');
                     let share = document.querySelector('#share');
                     let shareDiv = document.querySelector('#shareDiv');
-                    let money = document.querySelector('#money')
-                    let interest = document.querySelector('#interest')
+                    let money = document.querySelector('#money');
+                    let interest = document.querySelector('#interest');
                     let period = document.querySelector('#period');
+                    let daily = document.querySelector('#daily');
+                    let all = document.querySelector('#all');
+                    let period_all = document.querySelector('#period-all');
+                    let weekly = document.querySelector('#weekly');
+                    let period_weekly = document.querySelector('#period-weekly');
 
                     calculate.onclick = function() {
-                        let shareValue = Number(((interest.value * money.value) / 100)) + Number(money.value);
-                        share.value = shareValue / Number(period.value);
+                        let interest = document.querySelector('#interest');
+                        let daily = document.querySelector('#daily');
+                        let period_weekly = document.querySelector('#period-weekly');
+                        let period_all = document.querySelector('#period-all');
+                        let money = document.querySelector('#money');
+                        let shares_input = document.querySelector('#shares-input');
+                        let shares_div = document.querySelector('#shares-div');
+                        let period;
+                        let shares;
+
+                        if(daily.value == 21 || daily.value == 42) {
+                            if(period_weekly.value == 1) {
+                                switch(Number(daily.value)) {
+                                    case 21:
+                                        shares = 21 - 6;
+                                        break;
+                                    case 42:
+                                        shares = 42 - 12;
+                                        break;
+                                }
+                            } else {
+                                shares = Number(daily.value) / Number(period_weekly.value);
+                            }
+                        } else {
+                            if(period_all.value == 1) {
+                                switch(Number(daily.value)) {
+                                    case 28:
+                                        shares = 28 - 8;
+                                        break;
+                                    case 56:
+                                        shares = 56 - 16;
+                                        break;
+                                }
+                            } else {
+                                shares = Number(daily.value) / Number(period_all.value);
+                            }
+                        }
+
+                        let interest_final = (Number(interest.value) / 28) * Number(daily.value);
+                        let profit = (Number(money.value) * interest_final) / 100;
+
+                        share.value = Math.ceil((profit + Number(money.value)) / shares);
+                        shares_input.value = shares;
+                        shares_div.style.display = "block";
                         shareDiv.style.display = 'block';
                         submit.style.display = 'block';
+                    }
+
+                    daily.onchange = function() {
+                        if(daily.value == 21 || daily.value == 42) {
+                            weekly.style.display = 'block';
+                            all.style.display = 'none';
+                            period_weekly.setAttribute('name', 'period');
+                            period_all.setAttribute('name', '');
+                        } else {
+                            weekly.style.display = 'none';
+                            all.style.display = 'block';
+                            period_weekly.setAttribute('name', '');
+                            period_all.setAttribute('name', 'period');
+                        }
                     }
                 </script>
             </div>
