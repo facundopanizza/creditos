@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\InitialCash;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class InitialCashController extends Controller
 {
@@ -24,6 +25,10 @@ class InitialCashController extends Controller
      */
     public function create()
     {
+        if(Auth::user()->role !== 'admin') {
+            return redirect('/');
+        }
+
         return view('initial_cash.create');
     }
 
@@ -35,6 +40,10 @@ class InitialCashController extends Controller
      */
     public function store(Request $request)
     {
+        if(Auth::user()->role !== 'admin') {
+            return redirect('/');
+        }
+
         $validated = $request->validate([
             'entry_money' => ['required', 'numeric']
         ]);

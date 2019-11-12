@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\CashAllocation;
 use App\User;
+use App\CashAllocation;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class CashAllocationController extends Controller
 {
@@ -25,6 +26,10 @@ class CashAllocationController extends Controller
      */
     public function create(User $user)
     {
+        if(Auth::user()->role !== 'admin') {
+            return redirect('/');
+        }
+
         return view('cash_allocation.create', ['user' => $user]);
     }
 
@@ -36,6 +41,10 @@ class CashAllocationController extends Controller
      */
     public function store(User $user, Request $request)
     {
+        if(Auth::user()->role !== 'admin') {
+            return redirect('/');
+        }
+
         $validated = $request->validate([
             'money' => ['required', 'numeric']
         ]);

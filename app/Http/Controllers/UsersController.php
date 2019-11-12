@@ -3,22 +3,35 @@
 namespace App\Http\Controllers;
 
 use App\User;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 class UsersController extends Controller
 {
     public function index() {
+        if(Auth::user()->role !== 'admin') {
+            return redirect('/');
+        }
+
         $users = User::all();
 
         return view('users.index', ['users' => $users]);
     }
 
     public function edit(User $user) {
+        if(Auth::user()->role !== 'admin') {
+            return redirect('/');
+        }
+
         return view('users.edit', ['user' => $user]);
     }
 
     public function update(Request $request, User $user) {
+        if(Auth::user()->role !== 'admin') {
+            return redirect('/');
+        }
+
         if(isset($request['password'])) {
             if($request['email'] == $user->email || $request['dni'] == $user->dni) {
                 $validated = $request->validate([
@@ -75,13 +88,43 @@ class UsersController extends Controller
     }
 
     public function disable(User $user) {
+        if(Auth::user()->role !== 'admin') {
+            return redirect('/');
+        }
+
         $user->role = 'disabled';
         $user->save();
 
         return redirect('/users');
     }
 
+    public function enable(User $user) {
+        if(Auth::user()->role !== 'admin') {
+            return redirect('/');
+        }
+
+        $user->role = 'seller';
+        $user->save();
+
+        return redirect('/disabled-users');
+    }
+
+    public function disabledUsers()
+    {
+        if(Auth::user()->role !== 'admin') {
+            return redirect('/');
+        }
+
+        $users = User::where('role', 'disabled')->get();
+
+        return view('users.disabledUsers', ['users' => $users]);
+    }
+
     public function resume(User $user) {
+        if(Auth::user()->role !== 'admin') {
+            return redirect('/');
+        }
+
         return view('users.resume', ['user' => $user]);
     }
 }

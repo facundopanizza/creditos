@@ -17,7 +17,14 @@ class CreateClientsTable extends Migration
             $table->bigIncrements('id');
             $table->string('first_name');
             $table->string('last_name');
-            $table->unsignedInteger('dni')->unique();
+            $table->string('phone');
+            $table->string('cell_phone');
+            $table->string('activity');
+            $table->string('business_address');
+            $table->string('home_address');
+            $table->unsignedBigInteger('maximum_credit');
+            $table->unsignedInteger('max_simultaneous_credits')->default(1);
+            $table->string('dni')->unique();
             $table->timestamps();
         });
     }

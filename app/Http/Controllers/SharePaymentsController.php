@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Share;
 use App\SharePayment;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class SharePaymentsController extends Controller
 {
@@ -28,6 +29,7 @@ class SharePaymentsController extends Controller
         if($share->share_cancelled == 1) {
             return redirect()->back();
         }
+
         return view('share_payments.create', ['share' => $share]);
     }
 

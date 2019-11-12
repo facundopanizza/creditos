@@ -15,39 +15,48 @@
                 <span class="navbar-toggler-icon"></span>
             </button>
 
+            @guest
+            @else
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav mr-auto">
-                <li class="nav-item">
-                    <a class="nav-link" href="/initial_cash/create">Iniciar Caja Diaria</a>
-                </li>
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    Usuarios
-                    </a>
-                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <a class="dropdown-item" href="/users">Lista de Usuarios</a>
-                        <a class="dropdown-item" href="/register">Crear</a>
+                    @if(Auth::user()->role !== 'admin')
+                    @else
+                    <li class="nav-item">
+                        <a class="nav-link" href="/initial_cash/create">Iniciar Caja Diaria</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Usuarios
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <a class="dropdown-item" href="/users">Lista de Usuarios</a>
+                            <a class="dropdown-item" href="/disabled-users">Lista de Usuarios Deshabilitados</a>
+                            <a class="dropdown-item" href="/register">Crear</a>
+                        </div>
+                    </li>
+                    @endif
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Clientes
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <a class="dropdown-item" href="/clients">Lista de Clientes</a>
+                            <a class="dropdown-item" href="/clients/create">Crear</a>
+                        </div>
+                    </li>
+                    <div class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Creditos
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <a class="dropdown-item" href="/credits">Lista de Creditos</a>
+                            <a class="dropdown-item" href="/credits/create">Nuevo Credito</a>
+                        </div>
                     </div>
-                </li>
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    Clientes
-                    </a>
-                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <a class="dropdown-item" href="/clients">Lista de Clientes</a>
-                        <a class="dropdown-item" href="/clients/create">Crear</a>
-                    </div>
-                </li>
-                <div class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    Creditos
-                    </a>
-                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <a class="dropdown-item" href="/credits">Lista de Creditos</a>
-                        <a class="dropdown-item" href="/credits/create">Nuevo Credito</a>
-                    </div>
-                </div>
+                </ul>
             </div>
+            @endguest
+
             @guest
             @else
             <div class="nav-item text-light">

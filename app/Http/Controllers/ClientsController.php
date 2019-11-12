@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\User;
 use App\Client;
 use Illuminate\Http\Request;
 
@@ -40,7 +41,13 @@ class ClientsController extends Controller
         $validated = $request->validate([
             'first_name' => ['required', 'string', 'max:255'],
             'last_name' => ['required', 'string', 'max:255'],
-            'dni' => ['required', 'integer', 'unique:clients']
+            'phone' => ['required', 'string', 'max:255'],
+            'cell_phone' => ['required', 'string', 'max:255'],
+            'activity' => ['required', 'string', 'max:255'],
+            'business_address' => ['required', 'string', 'max:255'],
+            'home_address' => ['required', 'string', 'max:255'],
+            'maximum_credit' => ['required', 'integer'],
+            'dni' => ['required', 'string', 'unique:clients']
         ]);
 
         Client::create($validated);
@@ -82,11 +89,30 @@ class ClientsController extends Controller
         $validated = $request->validate([
             'first_name' => ['required', 'string', 'max:255'],
             'last_name' => ['required', 'string', 'max:255'],
-            'dni' => ['required', 'integer', 'unique:clients']
+            'phone' => ['required', 'string', 'max:255'],
+            'cell_phone' => ['required', 'string', 'max:255'],
+            'activity' => ['required', 'string', 'max:255'],
+            'business_address' => ['required', 'string', 'max:255'],
+            'home_address' => ['required', 'string', 'max:255'],
+            'dni' => ['required', 'string']
         ]);
+
+        $checkDni = User::where('dni', $validated['dni'])->get();
+        if(!isset($checkDni)) {
+            if($checkDni->first()->id !== $client->id && $checkDni->count() > 1) {
+                return redirect()->back();
+            }
+        }
 
         $client->first_name = $validated['first_name'];
         $client->last_name = $validated['last_name'];
+        $client->phone = $validated['phone'];
+        $client->cell_phone = $validated['cell_phone'];
+        $client->activity = $validated['activity'];
+        $client->business_address = $validated['business_address'];
+        $client->home_address = $validated['home_address'];
+        $client->maximum_credit = $request['maximum_credit'];
+        $client->max_simultaneous_credits = $request['maximum_credit'];
         $client->dni = $validated['dni'];
 
         $client->save();
