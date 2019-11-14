@@ -19,6 +19,7 @@ class CreateSharesTable extends Migration
             $table->unsignedDecimal('money', 20, 2);
             $table->boolean('share_cancelled')->default(0);
             $table->date('expiration_date');
+            $table->unsignedInteger('share_number');
             $table->timestamps();
         });
     }

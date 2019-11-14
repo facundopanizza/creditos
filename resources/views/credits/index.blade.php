@@ -15,6 +15,7 @@
         <th scope="col">Período</th>
         <th scope="col">Fecha Creacion</th>
         <th scope="col">Fecha Vencimiento</th>
+        <th scope="col">Estado</th>
         <th></th>
     </tr>
 </thead>
@@ -31,6 +32,13 @@
             <td>{{ $credit->period }}</td>
             <td>{{ $credit->created_at }}</td>
             <td>{{ $credit->expiration_date }}</td>
+            <td>
+                @if($credit->credit_cancelled === 1)
+                    <span class="text-success">Abonado</span>
+                @else
+                    <span class="text-danger">Pendiente</span>
+                @endif
+            </td>
             <td><a class="btn btn-primary" href="/credits/{{ $credit->id }}">Ver Credito</a></td>
         </tr>
         @endforeach
@@ -46,6 +54,13 @@
             <td>{{ $credit->period }}</td>
             <td>{{ $credit->created_at }}</td>
             <td>{{ $credit->expiration_date }}</td>
+            <td>
+                @if($credit->credit_cancelled === 1)
+                    <span class="text-success">Abonado</span>
+                @else
+                    <span class="text-danger">Pendiente</span>
+                @endif
+            </td>
             <td><a class="btn btn-primary" href="/credits/{{ $credit->id }}">Ver Credito</a></td>
         </tr>
         @endforeach

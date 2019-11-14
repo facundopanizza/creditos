@@ -56,18 +56,19 @@
                     </div>
                 </div>
 
-                @if(Auth::user()->role === 'admin')
                 <div class="row">
+                    @if(Auth::user()->role === 'admin')
                     <div class="form-group col-md-6">
-                        <label for="max_simultaneous_credits">Monto Maximo de Credito</label>
+                        <label for="max_simultaneous_credits">Cantidad de Creditos Simultaneos</label>
                         <input type="text" class="form-control" name="max_simultaneous_credits" placeholder="12345678" value="{{ $client->max_simultaneous_credits }}" required>
                     </div>
+                    @endif
+
                     <div class="form-group col-md-6">
                         <label for="maximum_credit">Monto Maximo de Credito</label>
                         <input type="number" class="form-control" name="maximum_credit" placeholder="12345678" value="{{ $client->maximum_credit }}" required>
                     </div>
                 </div>
-                @endif
                 <button type="submit" class="btn btn-primary">Editar</button>
             </form>
         </div>

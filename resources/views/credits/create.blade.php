@@ -7,6 +7,17 @@
         <div class="card-header">
             Nuevo Credito
         </div>
+        @if(isset($errorMessage))
+        <div class="card-header bg-danger text-white">
+            {{ $errorMessage }}
+        </div>
+        @endif
+
+        @error('credit_to_cancel')
+        <div class="card-header bg-danger text-white">
+            {{ $message }}
+        </div>
+        @enderror
 
         @if(!empty($client->id))
             <div class="card-body">
@@ -38,16 +49,20 @@
                     <div class="row">
                         <div class="form-group col-md-4">
                             <label for="money">Monto a Prestar</label>
-                            <input id="money" type="number" class="form-control" name="money">
+                            <input id="money" type="number" class="form-control @error('money') is-invalid @enderror" name="money" value="{{ old('money') }}">
+                            @error('money')
+                                <div class="invalid-feedback">
+                                    {{ $message }}
+                                </div>
+                            @enderror
                         </div>
 
                         <div class="form-group col-md-4">
                             <label for="interest_rate">Porcentaje de Interes</label>
                             <div class="row">
                                 <div class="col-md-11">
-                                    <input id="interest" type="number" class="form-control" name="interest_rate">
+                                    <input id="interest" type="number" class="form-control" name="interest_rate" value="{{old('interest_rate') !== null ? old('interest_rate') : 40 }}">
                                 </div>
-                                <div class="col-md-1">%</div>
                             </div>
                         </div>
 
@@ -59,6 +74,11 @@
                                 <option value="42">42</option>
                                 <option value="56">56</option>
                             </select>
+                        </div>
+
+                        <div class="form-group col-md-4">
+                            <label for="maximum_credit">Monto maximo de credito</label>
+                            <input id="maximum_credit" class="form-control" value="{{ $client->maximum_credit }}" readonly>
                         </div>
 
                         <div id="all" class="form-group col-md-4" style="display: none">
@@ -90,6 +110,29 @@
                             <input class="form-control" id="shares-input" type="number" readonly>
                         </div>
                     </div>
+
+                    @if(isset($errorMessage))
+                        <h5>Pagar Credito Pendiente con Nuevo Credito</h5>
+
+                        @foreach($credits as $credit)
+                        <?php
+                            $debt = 0;
+                            foreach($credit->shares as $share) {
+                                if($share->share_cancelled !== 1) {
+                                    $payed = 0;
+                                    foreach($share->payments as $payment) {
+                                        $payed += $payment->payment_amount;
+                                    }
+                                    $debt += $share->money - $payed;
+                                }
+                            }
+                        ?>
+                        <div class="form-group">
+                            <input type="radio" name="credit_to_cancel" class="" value="{{ $credit->id }}">
+                            <label for="credit_id_to_cancel" value="{{ $credit->id }}">Deuda: {{ $debt }} <a href="/credits/{{ $credit->id }}">Ver credito</a></label>
+                        </div>
+                        @endforeach
+                    @endif
 
                     <button type="button" id="calculate" class="btn btn-secondary mb-4">Calcular</button>
 

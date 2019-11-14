@@ -12,6 +12,8 @@
         <th scope="col">DNI</th>
         <th></th>
         <th></th>
+        <th></th>
+        <th></th>
     </tr>
 </thead>
 <tbody>
@@ -21,6 +23,8 @@
         <td>{{ $client->first_name }}</td>
         <td>{{ $client->last_name }}</td>
         <td>{{ $client->dni }}</td>
+        <td><a href="/clients/{{ $client->id }}" class="btn btn-primary">Ver Cliente</a></td>
+        <td><a href="/clients/{{ $client->id }}/credits/create" class="btn btn-primary">Nuevo Credito</a></td>
         <td><a href="/clients/{{ $client->id }}/edit" class="btn btn-primary">Editar</a></td>
         <td>
             <form action="/clients/{{ $client->id }}" method="POST">

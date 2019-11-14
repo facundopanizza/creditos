@@ -100,9 +100,7 @@ class RegisterController extends Controller
         $validator = $this->validator($request->all());
 
         if ($validator->fails()) {
-            $this->throwValidationException(
-                $request, $validator
-            );
+            return redirect()->back()->withErrors($validator)->withInput();
         }
 
         $this->create($request->all());

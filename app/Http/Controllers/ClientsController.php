@@ -63,7 +63,7 @@ class ClientsController extends Controller
      */
     public function show(Client $client)
     {
-        //
+        return view('clients.show')->withClient($client);
     }
 
     /**
@@ -94,6 +94,8 @@ class ClientsController extends Controller
             'activity' => ['required', 'string', 'max:255'],
             'business_address' => ['required', 'string', 'max:255'],
             'home_address' => ['required', 'string', 'max:255'],
+            'maximum_credit' => ['integer'],
+            'max_simultaneous_credits' => ['integer'],
             'dni' => ['required', 'string']
         ]);
 
@@ -111,8 +113,8 @@ class ClientsController extends Controller
         $client->activity = $validated['activity'];
         $client->business_address = $validated['business_address'];
         $client->home_address = $validated['home_address'];
-        $client->maximum_credit = $request['maximum_credit'];
-        $client->max_simultaneous_credits = $request['maximum_credit'];
+        $client->maximum_credit = $validated['maximum_credit'];
+        $client->max_simultaneous_credits = $validated['maximum_credit'];
         $client->dni = $validated['dni'];
 
         $client->save();

@@ -75,6 +75,18 @@ class SharePaymentsController extends Controller
             ]);
         }
 
+        $cancelled = true;
+        foreach($share->credit->shares as $share_each) {
+            if($share_each->share_cancelled == 0) {
+                $cancelled = false;
+            }
+        }
+
+        if($cancelled === true) {
+            $share->credit->credit_cancelled = 1;
+            $share->credit->save();
+        }
+
         $id = $share->credit->id;
         
         return redirect("/credits/$id");

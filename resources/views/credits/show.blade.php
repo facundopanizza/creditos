@@ -25,6 +25,7 @@
         <table class="table table-hover">
             <thead>
                 <tr>
+                    <th scope="col">Numero de Cuota</th>
                     <th scope="col">Precio</th>
                     <th scope="col">Vencimiento</th>
                     <th scope="col">Estado</th>
@@ -35,6 +36,7 @@
             <tbody>
                 @foreach($credit->shares as $share)
                 <tr>
+                    <td>{{ $share->share_number }}</td>
                     <td>{{ $share->money }}</td>
                     <td>{{ $share->expiration_date }} </td>
                     <td>
