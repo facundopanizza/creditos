@@ -22,7 +22,7 @@
                     @if(Auth::user()->role !== 'admin')
                     @else
                     <li class="nav-item">
-                        <a class="nav-link" href="/initial_cash/create">Iniciar Caja Diaria</a>
+                        <a class="nav-link" href="/initial_cash">Caja Diaria</a>
                     </li>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">

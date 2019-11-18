@@ -6,82 +6,75 @@
 
 @section('title', 'Estadísticas')
 @section('main')
+    @if(Auth::user()->role !== 'admin')
     <h3 class="mt-2">Cuotas Vencidas</h3>
+    <table class="table table-hover">
+    <thead>
+        <tr class="bg-danger text-white">
+            <th scope="col">Numero de Cuota</th>
+            <th scope="col">Cliente</th>
+            <th scope="col">Deuda</th>
+            <th scope="col">Fecha de Vencimiento</th>
+            <th></th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
     @foreach($expiredShares as $share)
-    <div class="card-columns">
-        <div class="card">
-            <div class="card-header bg-danger"></div>
-            <div class="card-body">
-                <div class="text-center">
-                    <p class="card-title"><span class="text-secondary">Cliente: </span>{{ $share->credit->client->first_name . ' ' . $share->credit->client->last_name }}</p>
-                </div>
-                <div class="row justify-content-around">
-                    <div>
-                            @if($share->payments->count() === 0)
-                                <span class="text-secondary">Debe</span><p>${{ $share->money }}</p>
-                            @else
-                                <?php
-                                    $payed = 0;
-
-                                    foreach($share->payments as $payment) {
-                                        $payed += $payment->payment_amount;
-                                    }
-                                ?>
-                                <span class="text-secondary">Debe</span><p>${{ $share->money - $payed }}</p>
-                            @endif
-                    </div>
-                    <div>
-                        <span class="text-secondary">Vencimiento</span><p>{{ $share->expiration_date->isoFormat('DD/MM/YYYY') }}</p>
-                    </div>
-                </div>
-                <div class="row justify-content-around">
-                    <a href="/credits/{{ $share->credit->id }}" class="btn btn-primary text-white">Ver Credito</a>
-                    <a href="/shares/{{ $share->id }}/share_payments" class="btn btn-success text-white">Cobrar Cuota</a>
-                </div>
-            </div>
-        </div>
-    </div>
+        <?php
+            $payed = 0;
+            foreach($share->payments as $payment) {
+                $payed += $payment->payment_amount;
+            }
+            $debt = $share->money - $payed;
+        ?>
+        <tr>
+            <td>{{ $share->share_number }}</td>
+            <td>{{ $share->credit->client->first_name . ' ' . $share->credit->client->last_name }}</td>
+            <td>{{ $debt }}</td>
+            <td>{{ $share->expiration_date->isoFormat('DD/MM/YYYY') }}</td>
+            <td><a class="btn btn-success" href="/shares/{{ $share->id }}/share_payments">Cobrar Cuota</a></td>
+            <td><a class="btn btn-primary" href="/credits/{{ $share->credit->id }}">Ver Credito</a></td>
+        </tr>
     @endforeach
+    </table>
 
     <hr>
 
     <h3 class="mt-2">Cuotas a Cobrar Hoy</h3>
+    <table class="table table-hover">
+    <thead>
+        <tr>
+            <th scope="col">Numero de Cuota</th>
+            <th scope="col">Cliente</th>
+            <th scope="col">Deuda</th>
+            <th scope="col">Fecha de Vencimiento</th>
+            <th></th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
     @foreach($todayShares as $share)
     @if($share->share_cancelled === 0)
-        <div class="card-columns">
-            <div class="card">
-                <div class="card-header bg-primary"></div>
-                <div class="card-body">
-                    <div class="text-center">
-                        <p class="card-title"><span class="text-secondary">Cliente: </span>{{ $share->credit->client->first_name . ' ' . $share->credit->client->last_name }}</p>
-                    </div>
-                    <div class="row justify-content-around">
-                        <div>
-                            @if($share->payments->count() === 0)
-                                <span class="text-secondary">Debe</span><p>${{ $share->money }}</p>
-                            @else
-                                <?php
-                                    $payed = 0;
-
-                                    foreach($share->payments as $payment) {
-                                        $payed += $payment->payment_amount;
-                                    }
-                                ?>
-                                <span class="text-secondary">Debe</span><p>${{ $share->money - $payed }}</p>
-                            @endif
-                        </div>
-                        <div>
-                            <span class="text-secondary">Vencimiento</span><p>{{ $share->expiration_date->isoFormat('DD/MM/YYYY') }}</p>
-                        </div>
-                    </div>
-                    <div class="row justify-content-around">
-                        <a href="/credits/{{ $share->credit->id }}" class="btn btn-primary text-white">Ver Credito</a>
-                        <a href="/shares/{{ $share->id }}/share_payments" class="btn btn-success text-white">Cobrar Cuota</a>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <?php
+            $payed = 0;
+            foreach($share->payments as $payment) {
+                $payed += $payment->payment_amount;
+            }
+            $debt = $share->money - $payed;
+        ?>
+        <tr>
+            <td>{{ $share->share_number }}</td>
+            <td>{{ $share->credit->client->first_name . ' ' . $share->credit->client->last_name }}</td>
+            <td>{{ $debt }}</td>
+            <td>{{ $share->expiration_date->isoFormat('DD/MM/YYYY') }}</td>
+            <td><a class="btn btn-success" href="/shares/{{ $share->id }}/share_payments">Cobrar Cuota</a></td>
+            <td><a class="btn btn-primary" href="/credits/{{ $share->credit->id }}">Ver Credito</a></td>
+        </tr>
     @endif
     @endforeach
+    </table>
     <hr>
+    @else
+    @endif
 @endsection

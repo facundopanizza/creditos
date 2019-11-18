@@ -13,7 +13,12 @@
 
                 <div class="form-group">
                     <label for="entry_money">Plata</label>
-                    <input type="number" class="form-control" name="money" required>
+                    <input type="number" class="form-control @error('money') is-invalid @enderror" name="money" value="{{ old('money') }}" required>
+                    @error('money')
+                    <span class="text-danger">
+                        {{ $message }}
+                    </span>
+                    @enderror
                 </div>
 
                 <button type="submit" class="btn btn-primary">Dar Plata</button>

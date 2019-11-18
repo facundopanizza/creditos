@@ -42,7 +42,7 @@ class CreditsController extends Controller
         }
 
         if($numberOfCredits >= $client->max_simultaneous_credits && $client->max_simultaneous_credits !== null) {
-            $message = 'El cliente tiene  ' . $numberOfCredits . ' credito sin terminar de pagar y no puede crear un nuevo credito.';
+            $message = 'El cliente tiene  ' . $numberOfCredits . ' creditos sin terminar de pagar y no puede crear un nuevo credito.';
             return view('credits.create', ['client' => $client, 'credits' => $credits, 'errorMessage' => $message]);
         }
 
@@ -114,7 +114,7 @@ class CreditsController extends Controller
             }
         }else {
             if($numberOfCredits >= $client->max_simultaneous_credits) {
-                $message = 'El cliente tiene  ' . $numberOfCredits . ' credito sin terminar de pagar y no puede crear un nuevo credito.';
+                $message = 'El cliente tiene  ' . $numberOfCredits . ' creditos sin terminar de pagar y no puede crear un nuevo credito.';
                 $validator = Validator::make([], []);
                 $validator->getMessageBag()->add('credit_limit', $message);
                 return redirect()->back()->withErrors($validator)->withInput()->withCredits($credits);

@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use Carbon\Carbon;
 use App\InitialCash;
+use App\CashAllocation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -15,7 +17,20 @@ class InitialCashController extends Controller
      */
     public function index()
     {
-        //
+        if(Auth::user()->role !== 'admin') {
+            return redirect('/');
+        }
+
+        $initialCash = InitialCash::whereDate('created_at', Carbon::today())->get()->first();
+        $allocateds = CashAllocation::whereDate('created_at', Carbon::today())->get();
+        
+        $money = 0;
+        foreach($allocateds as $allocated) {
+            $money += $allocated->money;
+        }
+        $money = $initialCash->entry_money - $money;
+
+        return view('initial_cash.index', ['initialCash' => $initialCash, 'money' => $money]);
     }
 
     /**
@@ -25,11 +40,7 @@ class InitialCashController extends Controller
      */
     public function create()
     {
-        if(Auth::user()->role !== 'admin') {
-            return redirect('/');
-        }
-
-        return view('initial_cash.create');
+        //
     }
 
     /**

@@ -3,9 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\User;
+use Carbon\Carbon;
+use App\InitialCash;
 use App\CashAllocation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
 
 class CashAllocationController extends Controller
 {
@@ -48,6 +51,22 @@ class CashAllocationController extends Controller
         $validated = $request->validate([
             'money' => ['required', 'numeric']
         ]);
+
+        $allocateds = CashAllocation::whereDate('created_at', Carbon::today())->get();
+        $initial_cash = InitialCash::whereDate('created_at', Carbon::today())->first();
+        
+        $cash = $validated['money'];
+        foreach($allocateds as $allocated) {
+            $cash += $allocated->money;
+        }
+
+        if(!empty($initial_cash)) {
+            if($cash > $initial_cash->entry_money) {
+                $validator = Validator::make([], []);
+                $validator->getMessageBag()->add('money', 'No tiene saldo suficiente.');
+                return redirect()->back()->withInput()->withErrors($validator);
+            }
+        }
 
         CashAllocation::create([
             'user_id' => auth()->user()->id,
