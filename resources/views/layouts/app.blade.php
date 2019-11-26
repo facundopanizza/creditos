@@ -21,8 +21,15 @@
                 <ul class="navbar-nav mr-auto">
                     @if(Auth::user()->role !== 'admin')
                     @else
-                    <li class="nav-item">
-                        <a class="nav-link" href="/initial_cash">Caja Diaria</a>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Caja
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <a class="dropdown-item" href="/initial_cash">Caja Diaria</a>
+                            <a class="dropdown-item" href="/close_day">Cerrar Caja Diaria</a>
+                            <a class="dropdown-item" href="/cash_entries">Recibir dinero de Vendedor</a>
+                        </div>
                     </li>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -54,23 +61,23 @@
                         </div>
                     </div>
                 </ul>
+
+                <div class="nav-item text-light mr-3">
+                    {{ Auth::user()->first_name . ' ' . Auth::user()->last_name }}
+                </div>
+                <div class="nav-item text-light">
+                    Saldo: {{ Auth::user()->wallet }}
+                </div>
+                <a class="nav-link text-light" href="/expenses">Gastos Vendedor</a>
+                <div class="nav-item">
+                    <form method="POST" action="/logout">
+                        @csrf
+                        
+                        <button type="submit" class="nav-link text-light" style="background-color: transparent; border: none">Cerrar Sesión</button>
+                    </form>
+                </div>
             </div>
             @endguest
-
-            @guest
-            @else
-            <div class="nav-item text-light">
-                {{ Auth::user()->first_name . ' ' . Auth::user()->last_name }}
-            </div>
-            <div class="nav-item">
-                <form method="POST" action="/logout">
-                    @csrf
-                    
-                    <button type="submit" class="nav-link text-light" style="background-color: transparent; border: none">Cerrar Sesión</button>
-                </form>
-            </div>
-            @endguest
-
         </nav>
         <main class="container">
             @yield('main')

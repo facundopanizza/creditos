@@ -41,4 +41,10 @@ Route::middleware('auth')->group(function() {
     Route::post('/shares/{share}/share_payments', 'SharePaymentsController@store');
 
     Route::get('/initial_cash', 'InitialCashController@index');
+    Route::post('/initial_cash', 'InitialCashController@store');
+    Route::get('/cash_entries', 'InitialCashController@cashEntry');
+    Route::post('/cash_entries', 'InitialCashController@cashEntryStore');
+    Route::get('/close_day', 'InitialCashController@closeDay');
+
+    Route::resource('expenses', 'ExpenseController');
 });

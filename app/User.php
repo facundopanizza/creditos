@@ -42,4 +42,8 @@ class User extends Authenticatable
     public function cash_allocation() {
         return $this->hasMany('App\CashAllocation');
     }
+
+    public function expenses() {
+        return $this->hasMany('App\Expense', 'seller_id');
+    }
 }

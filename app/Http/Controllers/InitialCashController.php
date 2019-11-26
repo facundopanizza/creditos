@@ -5,6 +5,12 @@ namespace App\Http\Controllers;
 use Carbon\Carbon;
 use App\InitialCash;
 use App\CashAllocation;
+use App\CashEntry;
+use App\Credit;
+use App\Expense;
+use App\SharePayment;
+use App\User;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -23,14 +29,19 @@ class InitialCashController extends Controller
 
         $initialCash = InitialCash::whereDate('created_at', Carbon::today())->get()->first();
         $allocateds = CashAllocation::whereDate('created_at', Carbon::today())->get();
-        
-        $money = 0;
-        foreach($allocateds as $allocated) {
-            $money += $allocated->money;
-        }
-        $money = $initialCash->entry_money - $money;
 
-        return view('initial_cash.index', ['initialCash' => $initialCash, 'money' => $money]);
+        
+        if(!empty($initialCash)) {
+            $money = 0;
+            foreach($allocateds as $allocated) {
+                $money += $allocated->money;
+            }
+            $money = $initialCash->entry_money - $money;
+
+            return view('initial_cash.index', ['initialCash' => $initialCash, 'money' => $money]);
+        }
+
+        return view('initial_cash.index');
     }
 
     /**
@@ -110,5 +121,83 @@ class InitialCashController extends Controller
     public function destroy(InitialCash $initialCash)
     {
         //
+    }
+
+    public function cashEntry() {
+        $users = User::all();
+        $sellers = collect();
+
+        foreach($users as $user) {
+            if($user->wallet != 0) {
+                $sellers->add($user);
+            }
+        }
+
+        return view('initial_cash.cashEntry')->withSellers($sellers);
+    }
+
+    public function cashEntryStore(Request $request) {
+        foreach($request->sellers as $seller) {
+            $user = User::find($seller);
+            $initialCash = InitialCash::all()->last();
+
+            CashEntry::create([
+                'seller_id' => $user->id,
+                'initialCash_id' => $initialCash->id,
+                'money' => $user->wallet,
+            ]);
+
+            $user->wallet = 0;
+            $user->save();
+        }
+
+        return redirect('/');
+    }
+    
+    public function closeDay() {
+        $users = User::all();
+        foreach($users as $user) {
+            if($user->wallet != 0) {
+                $validator = Validator::make([], []);
+                $validator->getMessageBag()->add('cerrar', 'No puedes cerrar la caja sin terminar de recibir el dinero pendiente');
+                return redirect('cash_entries')->withErrors($validator);
+            }
+        }
+
+        $initialCash = InitialCash::whereDate('created_at', Carbon::today())->get()->first();
+        $cashAllocations = CashAllocation::whereDate('created_at', Carbon::today())->get();
+        $credits = Credit::whereDate('created_at', Carbon::today())->get();
+        $payments = SharePayment::whereDate('created_at', Carbon::today())->get();
+        $exps = Expense::whereDate('created_at', Carbon::today())->get();
+        $cashEntries = CashEntry::whereDate('created_at', Carbon::today())->get();
+        
+        $expenses = collect();
+        foreach($exps as $exp) {
+            if($exp->description !== null) {
+                $expenses->add($exp);
+            }
+        }
+
+        $pendient = $initialCash->entry_money;
+        foreach($cashAllocations as $cashAllocation) {
+            $pendient -= $cashAllocation->money;
+        }
+
+        $entrySum = 0;
+        foreach($cashEntries as $cashEntry) {
+            $entrySum += $cashEntry->money;
+        }
+
+        $total = $pendient + $entrySum;
+
+        return view('initial_cash.closeDay', [
+            'credits' => $credits,
+            'payments' => $payments,
+            'initialCash' => $initialCash,
+            'cashAllocations' => $cashAllocations,
+            'cashEntries' => $cashEntries,
+            'expenses' => $expenses,
+            'total' => $total,
+        ]);
     }
 }

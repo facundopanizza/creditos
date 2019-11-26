@@ -12,6 +12,7 @@
         <th scope="col">DNI</th>
         <th scope="col">Rol</th>
         <th scope="col">Email</th>
+        <th scope="col">Plata en Mano</th>
         <th></th>
         <th></th>
     </tr>
@@ -26,6 +27,7 @@
         <td>{{ $user->dni }}</td>
         <td>{{ $user->role }}</td>
         <td>{{ $user->email }}</td>
+        <td>{{ $user->wallet }}</td>
         <td><a href="/users/{{ $user->id }}/edit" class="btn btn-primary">Editar</a></td>
         <td><a href="/users/{{ $user->id }}/resume" class="btn btn-primary">Resumen</a></td>
         <td>

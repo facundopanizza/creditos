@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Expense;
 use App\Share;
 use App\SharePayment;
 use Illuminate\Http\Request;
@@ -64,12 +65,12 @@ class SharePaymentsController extends Controller
         if(($share->money) - ($validated['payment_amount'] + $payed) == 0) {
             $share->share_cancelled = true;
             $share->save();
-            SharePayment::create([
+            $sharePayment = SharePayment::create([
                 'share_id' => $share->id,
                 'payment_amount' => $validated['payment_amount']
             ]);
         } else {
-            SharePayment::create([
+            $sharePayment = SharePayment::create([
                 'share_id' => $share->id,
                 'payment_amount' => $validated['payment_amount']
             ]);
@@ -88,6 +89,14 @@ class SharePaymentsController extends Controller
         }
 
         $id = $share->credit->id;
+
+        Expense::create([
+            'seller_id' => Auth::user()->id,
+            'sharePayment_id' => $sharePayment->id,
+            'money' => $sharePayment->payment_amount,
+        ]);
+        Auth::user()->wallet += $sharePayment->payment_amount;
+        Auth::user()->save();
         
         return redirect("/credits/$id");
     }

@@ -15,6 +15,8 @@ class CreateFinalCashTable extends Migration
     {
         Schema::create('final_cash', function (Blueprint $table) {
             $table->bigIncrements('id');
+            $table->unsignedInteger('initialCash_id');
+            $table->unsignedDecimal('money', 20, 2);
             $table->timestamps();
         });
     }

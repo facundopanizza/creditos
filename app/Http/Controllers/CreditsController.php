@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Share;
 use App\Client;
 use App\Credit;
+use App\Expense;
+use App\SharePayment;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -84,6 +86,12 @@ class CreditsController extends Controller
             return redirect()->back()->withErrors($validator)->withInput();
         }
 
+        if(Auth::user()->wallet < $validated['money']) {
+                $message = 'No tienes dinero disponible para realizar este prestamo.';
+                $validator = Validator::make([], []);
+                $validator->getMessageBag()->add('money', $message);
+                return redirect()->back()->withErrors($validator)->withInput()->withCredits($credits);
+        }
 
         if(isset($validated['credit_to_cancel'])) {
             $debtCredit = Credit::find($validated['credit_to_cancel']);
@@ -105,8 +113,45 @@ class CreditsController extends Controller
                 return redirect()->back()->withErrors($validator)->withInput()->withCredits($credits);
             }else {
                 foreach($debtCredit->shares as $share) {
-                    $share->share_cancelled = 1;
-                    $share->save();
+                    if(empty($share->payments->first())) {
+                        $share->share_cancelled = 1;
+                        $share->save();
+
+                        $sharePayment = SharePayment::create([
+                            'share_id' => $share->id,
+                            'payment_amount' => $share->money,
+                        ]);
+
+                        Expense::create([
+                            'seller_id' => Auth::user()->id,
+                            'sharePayment_id' => $sharePayment->id,
+                            'money' => $sharePayment->payment_amount,
+                        ]);
+
+                        Auth::user()->wallet += $sharePayment->payment_amount;
+                        Auth::user()->save();
+                    } else {
+                        $payed = 0;
+                        foreach($share->payments as $payment) {
+                            $payed += $payment->payment_amount;
+                        }
+
+                        $debt_of_payment = $share->money - $payed;
+
+                        $sharePayment = SharePayment::create([
+                            'share_id' => $share->id,
+                            'payment_amount' => $debt,
+                        ]);
+
+                        Expense::create([
+                            'seller_id' => Auth::user()->id,
+                            'sharePayment_id' => $sharePayment->id,
+                            'money' => $debt_of_payment,
+                        ]);
+
+                        Auth::user()->wallet += $debt_of_payment;
+                        Auth::user()->save();
+                    }
                 }
 
                 $credit->credit_cancelled = 1;
@@ -116,7 +161,7 @@ class CreditsController extends Controller
             if($numberOfCredits >= $client->max_simultaneous_credits) {
                 $message = 'El cliente tiene  ' . $numberOfCredits . ' creditos sin terminar de pagar y no puede crear un nuevo credito.';
                 $validator = Validator::make([], []);
-                $validator->getMessageBag()->add('credit_limit', $message);
+                $validator->getMessageBag()->add('money', $message);
                 return redirect()->back()->withErrors($validator)->withInput()->withCredits($credits);
             }
         }
@@ -176,6 +221,14 @@ class CreditsController extends Controller
             $share->share_number = $i + 1;
             $share->save();
         }
+
+        Auth::user()->wallet -= $credit->money;
+        Expense::create([
+            'seller_id' => Auth::user()->id,
+            'credit_id' => $credit->id,
+            'money' => $credit->money
+        ]);
+        Auth::user()->save();
 
         return redirect("/credits/$credit->id");
     }

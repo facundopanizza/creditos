@@ -6,6 +6,7 @@ use App\User;
 use Carbon\Carbon;
 use App\InitialCash;
 use App\CashAllocation;
+use App\Expense;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
@@ -63,16 +64,24 @@ class CashAllocationController extends Controller
         if(!empty($initial_cash)) {
             if($cash > $initial_cash->entry_money) {
                 $validator = Validator::make([], []);
-                $validator->getMessageBag()->add('money', 'No tiene saldo suficiente.');
+                $validator->getMessageBag()->add('money', 'No tienes saldo suficiente.');
                 return redirect()->back()->withInput()->withErrors($validator);
             }
         }
 
-        CashAllocation::create([
+        $cashAllocation = CashAllocation::create([
             'user_id' => auth()->user()->id,
             'seller_id' => $user->id,
             'money' => $validated['money']
         ]);
+
+        $user->wallet += $validated['money'];
+        Expense::create([
+            'seller_id' => $user->id,
+            'cashAllocation_id' => $cashAllocation->id,
+            'money' => $cashAllocation->money
+        ]);
+        $user->save();
 
         return redirect('/users');
     }

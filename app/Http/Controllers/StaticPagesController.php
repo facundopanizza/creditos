@@ -2,7 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Credit;
 use Carbon\Carbon;
+use App\InitialCash;
+use App\SharePayment;
+use App\CashAllocation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -26,5 +30,30 @@ class StaticPagesController extends Controller
         }
 
         return view('static_pages.home')->withTodayShares($todayShares)->withExpiredShares($expiredShares);
+    }
+
+    public function closeDay()
+    {
+        $today = Carbon::today();
+
+        $initial_cash = InitialCash::whereDate('created_at', $today)->first();
+        $share_payments = SharePayment::whereDate('created_at', $today)->get();
+        $credits = Credit::whereDate('created_at', $today)->get();
+
+        $payed = 0;
+        foreach($share_payments as $share_payment) {
+            $payed += $share_payment->payment_amount;
+        }
+
+        $borrowed = 0;        
+        foreach($credits as $credit) {
+            $borrowed += $credit->money;
+        }
+
+        return view('static_pages.closeDay', [
+            'initial_cash' => $initial_cash,
+            'payed' => $payed,
+            'borrowed' => $borrowed,
+        ]);
     }
 }

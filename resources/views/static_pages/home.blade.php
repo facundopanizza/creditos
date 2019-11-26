@@ -1,12 +1,9 @@
 @extends('layouts.app')
 
-@if(Auth::user()->role === 'seller')
-    @section('title', 'Resumen de Hoy')
-@endif
+@section('title', 'Resumen de Hoy')
 
 @section('title', 'Estadísticas')
 @section('main')
-    @if(Auth::user()->role !== 'admin')
     <h3 class="mt-2">Cuotas Vencidas</h3>
     <table class="table table-hover">
     <thead>
@@ -73,8 +70,4 @@
         </tr>
     @endif
     @endforeach
-    </table>
-    <hr>
-    @else
-    @endif
 @endsection
