@@ -3,78 +3,81 @@
 @section('title', 'Resumen')
 
 @section('main')
-    <table class="table table-hover">
-        <thead>
-            <tr>
-                <th scope="col">Numero Actividad</th>
-                <th scope="col">Cliente</th>
-                <th scope="col">Tipo de Actividad</th>
-                <th scope="col">Plata</th>
-                <th scope="col">Fecha</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php
-                $money = 0;
-                $share_payment =  0;
-                $credit_sub = 0;
-                $allocated_sub = 0;
-            ?>
-            @foreach ($user->credits as $credit)
-                @foreach ($credit->shares as $share)
-                    @if(!empty($share->payment))
-                        <?php
-                            $money = $money + $share->payment->payment_amount;
-                            $share_payment = $share_payment + $share->payment->payment_amount;
-                        ?>
-                        <tr>
-                            <td>{{ $share->payment->id }}</td>
-                            <td>{{ $credit->client->first_name . ' ' . $credit->client->last_name }}</td>
-                            <td>Pago de Cuota</td>
-                            <td>+{{ $share->payment->payment_amount }}</td>
-                            <td>{{ $share->payment->created_at }}</td>
-                        </tr>
-                    @endif
-                @endforeach
-            @endforeach
-            <tr>
-                <td colspan="4">Subtotal: {{ $share_payment }}</td>
-            </tr>
-            @foreach ($user->credits as $credit)
-                <?php
-                    $money = $money - $credit->money;
-                    $credit_sub = $credit_sub - $credit->money;
-                ?>
+<div class="card">
+    <div class="card-header">
+        {{ $user->first_name . ' ' . $user->last_name}}
+    </div>
+    <div class="card-body">
+        <div class="row card-text pl-3 mb-3">
+            <strong>Saldo: {{ $user->wallet }}</strong>
+        </div>
+
+        <h3>Cuotas del día</h3>
+        <table class="table table-hover">
+            <thead>
                 <tr>
-                    <td>{{ $credit->id }}</td>
-                    <td>{{ $credit->client->first_name . ' ' . $credit->client->last_name }}</td>
-                    <td>Prestamo</td>
-                    <td>-{{ $credit->money }}</td>
-                    <td>{{ $credit->created_at }}</td>
+                    <th scope="col"><a class="btn-sm btn-primary" href="">Ver Cuotas</a></th>
+                    <th scope="col">Cantidad</th>
+                    <th scope="col">Monto</th>
                 </tr>
-            @endforeach
-            <tr>
-                <td colspan="4">Subtotal: {{ $credit_sub }}</td>
-            </tr>
-            @foreach ($user->cash_allocation as $cash_allocation)
-                <?php
-                    $money = $money + $cash_allocation->money;
-                    $allocated_sub = $allocated_sub + $cash_allocation->money;
-                ?>
+            </thead>
+            <tbody>
                 <tr>
-                    <td>{{ $cash_allocation->id }}</td>
-                    <td></td>
-                    <td>Plata Entregada</td>
-                    <td>+{{ $cash_allocation->money }}</td>
-                    <td>{{ $cash_allocation->created_at }}</td>
+                    <td>Cobradas</td>
+                    <td>{{ $shares->paymentsCount }}</td>
+                    <td>{{ $shares->paymentsAmount }}</td>
                 </tr>
-            @endforeach
-            <tr>
-                <td colspan="4">Subtotal: {{ $allocated_sub }}</td>
-            </tr>
-            <tr>
-                <td colspan="4">Total: {{ $money }}</td>
-            </tr>
-        </tbody>
-    </table>
+                <tr>
+                    <td>En Mora</td>
+                    <td>{{ $shares->expiredCount }}</td>
+                    <td>{{ $shares->expiredAmount }}</td>
+                </tr>
+            </tbody>
+        </table>
+        <a href=""><h3>Creditos del día</h3></a>
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>Cantidad</th>
+                    <th>Monto Prestado</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td scope="col">Otorgados</td>
+                    <td>{{ $credits->todayCount }}</td>
+                    <td>{{ $credits->todayMoney }}</td>
+                </tr>
+                <tr>
+                    <td scope="col">Cancelados</td>
+                    <td>{{ $credits->cancelledCount }}</td>
+                    <td>{{ $credits->cancelledMoney }}</td>
+                </tr>
+                <tr>
+                    <td scope="col">En Mora</td>
+                    <td>{{ $credits->expiredCount }}</td>
+                    <td>{{ $credits->expiredMoney }}</td>
+                </tr>
+            </tbody>
+        </table>
+        <a href=""><h3>Gastos del día</h3></a>
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th scope="col"></th>
+                    <th scope="col">Cantidad</th>
+                    <th scope="col">Monto</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Gastos</td>
+                    <td>{{ $expenses->expensesCount }}</td>
+                    <td>{{ $expenses->expensesMoney }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
 @endsection

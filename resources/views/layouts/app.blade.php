@@ -27,7 +27,12 @@
                         </a>
                         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                             <a class="dropdown-item" href="/initial_cash">Caja Diaria</a>
-                            <a class="dropdown-item" href="/close_day">Cerrar Caja Diaria</a>
+                            <?php
+                                $lastDay = App\InitialCash::all()->last();
+                            ?>
+                            @if($lastDay !== null && $lastDay->active !== 0)
+                                <a class="dropdown-item" href="/close_day">Cerrar Caja Diaria</a>
+                            @endif
                             <a class="dropdown-item" href="/cash_entries">Recibir dinero de Vendedor</a>
                         </div>
                     </li>

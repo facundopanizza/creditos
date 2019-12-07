@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Credit;
+use App\Expense;
+use App\Share;
 use App\SharePayment;
 use App\User;
 use Carbon\Carbon;
@@ -128,7 +131,68 @@ class UsersController extends Controller
             return redirect('/');
         }
 
-        return view('users.resume', ['user' => $user]);
+        $today = Carbon::today();
+        $sharePayments = SharePayment::whereDate('created_at', $today)->get();
+
+        $shares = collect();
+        $shares->paymentsCount = $sharePayments->count();
+        $payed = 0;
+        foreach($sharePayments as $sharePayment) {
+            $payed += $sharePayment->payment_amount;
+        }
+        $shares->paymentsAmount = $payed;
+
+        $expiredShares = Share::whereDate('expiration_date', '<', $today)->get();
+        $debt = 0;
+        foreach($expiredShares as $expiredShare) {
+            $debt += $expiredShare->money;
+        }
+        $shares->expiredCount = $expiredShares->count();
+        $shares->expiredAmount = $debt;
+
+        $todayCredits = Credit::whereDate('created_at', $today)->get();
+        $credits = collect();
+
+        $creditMoney = 0;
+        foreach($todayCredits as $credit) {
+            $creditMoney += $credit->money;
+        }
+        $credits->todayCount = $todayCredits->count();
+        $credits->todayMoney = $creditMoney;
+
+        $expiredCredits = Credit::where('expiration_date', '<', $today)->where('credit_cancelled', 0)->get();
+        $expiredMoney = 0;
+        foreach($expiredCredits as $expiredCredit) {
+            $expiredMoney += $expiredCredit->money;
+        }
+        $credits->expiredCount = $expiredCredits->count();
+        $credits->expiredMoney = $expiredMoney;
+
+        $cancelledCredits = Credit::whereDate('updated_at', $today)->whereColumn('updated_at', '>', 'created_at')->where('credit_cancelled', 1)->get();
+        $cancelledMoney = 0;
+        foreach($cancelledCredits as $cancelledCredit) {
+            $cancelledMoney += $cancelledCredit->money;
+        }
+        $credits->cancelledCount = $cancelledCredits->count();
+        $credits->cancelledMoney = $cancelledMoney;
+
+        $expenses = collect();
+        $todayExpenses = Expense::whereDate('created_at', $today)->where('seller_id', $user->id)->where('description', '!=', null)->get();
+        $expensesMoney = 0;
+        foreach($todayExpenses as $expense) {
+            $expensesMoney += $expense->money;
+        }
+        $expenses->expensesCount = $todayExpenses->count();
+        $expenses->expensesMoney = $expensesMoney;
+        
+        
+
+        return view('users.resume', [
+            'user' => $user,
+            'shares' => $shares,
+            'credits' => $credits,
+            'expenses' => $expenses,
+            ]);
     }
 
     public function sellersReport()

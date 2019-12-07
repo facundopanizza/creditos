@@ -4,12 +4,12 @@ namespace App\Http\Controllers;
 
 use Carbon\Carbon;
 use App\InitialCash;
-use App\CashAllocation;
 use App\CashEntry;
 use App\Credit;
 use App\Expense;
 use App\SharePayment;
 use App\User;
+use App\CloseDay;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -27,21 +27,13 @@ class InitialCashController extends Controller
             return redirect('/');
         }
 
-        $initialCash = InitialCash::whereDate('created_at', Carbon::today())->get()->first();
-        $allocateds = CashAllocation::whereDate('created_at', Carbon::today())->get();
+        $initialCash = InitialCash::all()->last();
 
-        
-        if(!empty($initialCash)) {
-            $money = 0;
-            foreach($allocateds as $allocated) {
-                $money += $allocated->money;
-            }
-            $money = $initialCash->entry_money - $money;
-
-            return view('initial_cash.index', ['initialCash' => $initialCash, 'money' => $money]);
+        if($initialCash->active === 0) {
+            $initialCash = null;
         }
 
-        return view('initial_cash.index');
+        return view('initial_cash.index')->withInitialCash($initialCash);
     }
 
     /**
@@ -72,7 +64,8 @@ class InitialCashController extends Controller
 
         InitialCash::create([
             'user_id' => auth()->user()->id,
-            'entry_money' => $validated['entry_money']
+            'entry_money' => $validated['entry_money'],
+            'money' => $validated['entry_money'],
         ]);
 
         return redirect('/users');
@@ -141,7 +134,7 @@ class InitialCashController extends Controller
             $user = User::find($seller);
             $initialCash = InitialCash::all()->last();
 
-            CashEntry::create([
+            $cash_entry = CashEntry::create([
                 'seller_id' => $user->id,
                 'initialCash_id' => $initialCash->id,
                 'money' => $user->wallet,
@@ -149,6 +142,9 @@ class InitialCashController extends Controller
 
             $user->wallet = 0;
             $user->save();
+
+            $initialCash->money += $cash_entry->money;
+            $initialCash->save();
         }
 
         return redirect('/');
@@ -156,6 +152,12 @@ class InitialCashController extends Controller
     
     public function closeDay() {
         $users = User::all();
+
+        $lastDay = InitialCash::all()->last();
+        if($lastDay === null || $lastDay->active === 0) {
+            return redirect()->back();
+        }
+
         foreach($users as $user) {
             if($user->wallet != 0) {
                 $validator = Validator::make([], []);
@@ -164,40 +166,52 @@ class InitialCashController extends Controller
             }
         }
 
-        $initialCash = InitialCash::whereDate('created_at', Carbon::today())->get()->first();
-        $cashAllocations = CashAllocation::whereDate('created_at', Carbon::today())->get();
+        $initialCash = InitialCash::all()->last();
         $credits = Credit::whereDate('created_at', Carbon::today())->get();
         $payments = SharePayment::whereDate('created_at', Carbon::today())->get();
         $exps = Expense::whereDate('created_at', Carbon::today())->get();
-        $cashEntries = CashEntry::whereDate('created_at', Carbon::today())->get();
         
-        $expenses = collect();
+        $expenses = 0;
         foreach($exps as $exp) {
             if($exp->description !== null) {
-                $expenses->add($exp);
+                $expenses += $exp->money;
             }
         }
 
-        $pendient = $initialCash->entry_money;
-        foreach($cashAllocations as $cashAllocation) {
-            $pendient -= $cashAllocation->money;
+        $moneyFromPayments = 0;
+        foreach($payments as $payment) {
+            $moneyFromPayments += $payment->payment_amount;
         }
 
-        $entrySum = 0;
-        foreach($cashEntries as $cashEntry) {
-            $entrySum += $cashEntry->money;
+        $moneyFromCredits = 0;
+        foreach($credits as $credit) {
+            $moneyFromCredits += $credit->money;
         }
-
-        $total = $pendient + $entrySum;
 
         return view('initial_cash.closeDay', [
-            'credits' => $credits,
-            'payments' => $payments,
+            'moneyFromCredits' => $moneyFromCredits,
+            'moneyFromPayments' => $moneyFromPayments,
             'initialCash' => $initialCash,
-            'cashAllocations' => $cashAllocations,
-            'cashEntries' => $cashEntries,
             'expenses' => $expenses,
-            'total' => $total,
         ]);
+    }
+
+    public function closeDayStore()
+    {
+        $lastDay = InitialCash::all()->last();
+        if($lastDay === null || $lastDay->active === 0) {
+            return redirect()->back();
+        }
+
+        $closeDay = CloseDay::create([
+            'initialCash_id' => $lastDay->id,
+            'money' => $lastDay->money,
+        ]);
+
+        $lastDay->closeDay_id = $closeDay->id;
+        $lastDay->active = 0;
+        $lastDay->save();
+
+        return redirect('/');
     }
 }

@@ -30,7 +30,7 @@
                         Caja Diaria: {{ $initialCash->entry_money }}
                     </div>
                     <div class="col-md-4">
-                        Saldo disponible: {{ $money }}
+                        Saldo disponible: {{ $initialCash->money }}
                     </div>
                 </div>
                 <form class="mb-4" method="POST" action="/search/sellers">

@@ -54,15 +54,12 @@ class CashAllocationController extends Controller
         ]);
 
         $allocateds = CashAllocation::whereDate('created_at', Carbon::today())->get();
-        $initial_cash = InitialCash::whereDate('created_at', Carbon::today())->first();
+        $initial_cash = InitialCash::all()->last();
         
-        $cash = $validated['money'];
-        foreach($allocateds as $allocated) {
-            $cash += $allocated->money;
-        }
+        $cash = $initial_cash->money - $validated['money'];
 
         if(!empty($initial_cash)) {
-            if($cash > $initial_cash->entry_money) {
+            if($cash < 0) {
                 $validator = Validator::make([], []);
                 $validator->getMessageBag()->add('money', 'No tienes saldo suficiente.');
                 return redirect()->back()->withInput()->withErrors($validator);
@@ -82,8 +79,12 @@ class CashAllocationController extends Controller
             'money' => $cashAllocation->money
         ]);
         $user->save();
+        
+        $initial_cash = InitialCash::all()->last();
+        $initial_cash->money -= $cashAllocation->money;
+        $initial_cash->save();
 
-        return redirect('/users');
+        return redirect('/initial_cash');
     }
 
     /**

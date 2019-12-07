@@ -45,6 +45,7 @@ Route::middleware('auth')->group(function() {
     Route::get('/cash_entries', 'InitialCashController@cashEntry');
     Route::post('/cash_entries', 'InitialCashController@cashEntryStore');
     Route::get('/close_day', 'InitialCashController@closeDay');
+    Route::post('/close_day', 'InitialCashController@closeDayStore');
 
     Route::resource('expenses', 'ExpenseController');
 });

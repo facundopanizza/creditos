@@ -55,7 +55,7 @@ class ExpenseController extends Controller
         }
 
         $path = $request->file('picture')->store('public/expenses');
-        $path = str_replace('public/', '', $path);
+        $path = str_replace('public/', 'storage/', $path);
 
         Expense::create([
             'seller_id' => Auth::user()->id,

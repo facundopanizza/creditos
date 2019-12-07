@@ -15,8 +15,11 @@ class CreateInitialCashesTable extends Migration
     {
         Schema::create('initial_cashes', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->unsignedDecimal('entry_money');
+            $table->unsignedDecimal('entry_money', 20, 2);
+            $table->unsignedDecimal('money', 20, 2);
             $table->unsignedInteger('user_id');
+            $table->unsignedInteger('closeDay_id')->nullable()->default(null);
+            $table->boolean('active')->default(1);
             $table->timestamps();
         });
     }
