@@ -21,6 +21,10 @@ Route::middleware('auth')->group(function() {
     Route::get('/users', 'UsersController@index');
     Route::get('/users/{user}/edit', 'UsersController@edit');
     Route::get('/users/{user}/resume', 'UsersController@resume');
+    Route::get('/users/{user}/resume/shares', 'UsersController@resumeShares');
+    Route::get('/users/{user}/resume/credits', 'UsersController@resumeCredits');
+    Route::get('/users/{user}/resume/expenses', 'UsersController@resumeExpenses');
+    Route::get('/users/{user}/resume/cash_entry', 'InitialCashController@individualCashEntryStore');
     Route::get('/disabled-users', 'UsersController@disabledUsers');
     Route::get('/users/{user}/cash_allocation', 'CashAllocationController@create');
     Route::get('/sellers-report', 'UsersController@sellersReport');

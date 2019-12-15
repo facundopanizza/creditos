@@ -25,7 +25,7 @@
 
                 <div class="row">
                     <div class="form-group col-md-6">
-                        <label for="phone">Numbero de Telefono</label>
+                        <label for="phone">Numero de Telefono</label>
                         <input type="text" class="form-control" name="phone" placeholder="12345678" value="{{ $client->phone }}" required>
                     </div>
                     <div class="form-group col-md-6">
@@ -56,19 +56,25 @@
                     </div>
                 </div>
 
-                <div class="row">
-                    @if(Auth::user()->role === 'admin')
+				@if(Auth::user()->role === 'admin')
+				<div class="row">
                     <div class="form-group col-md-6">
-                        <label for="max_simultaneous_credits">Cantidad de Creditos Simultaneos</label>
-                        <input type="text" class="form-control" name="max_simultaneous_credits" placeholder="12345678" value="{{ $client->max_simultaneous_credits }}" required>
-                    </div>
-                    @endif
-
-                    <div class="form-group col-md-6">
-                        <label for="maximum_credit">Monto Maximo de Credito</label>
+                        <label for="maximum_credit">Limite de cantidad de dinero a prestar en total</label>
                         <input type="number" class="form-control" name="maximum_credit" placeholder="12345678" value="{{ $client->maximum_credit }}" required>
                     </div>
+
+                    <div class="form-group col-md-6">
+                        <label for="seller_id">Vendedor Asignado</label>
+                        <select list="seller_id" class="form-control" name="seller_id" value="{{ $client->seller_id }}" required>
+						@foreach($sellers as $seller)
+							<option value="{{ $seller->id }}" @if($seller->id == $client->seller_id) selected @endif>
+								{{ $seller->first_name . ' ' . $seller->last_name }}
+							</option>
+						@endforeach
+						</select>
+                    </div>
                 </div>
+				@endif
                 <button type="submit" class="btn btn-primary">Editar</button>
             </form>
         </div>

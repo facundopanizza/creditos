@@ -166,27 +166,29 @@
 
                         if(daily.value == 21 || daily.value == 42) {
                             if(period_weekly.value == 1) {
-                                switch(Number(daily.value)) {
-                                    case 21:
-                                        shares = 21 - 6;
-                                        break;
-                                    case 42:
-                                        shares = 42 - 12;
-                                        break;
-                                }
+								shares = Number(daily.value);
+                                /* switch(Number(daily.value)) { */
+                                /*     case 21: */
+                                /*         shares = 21 - 6; */
+                                /*         break; */
+                                /*     case 42: */
+                                /*         shares = 42 - 12; */
+                                /*         break; */
+                                /* } */
                             } else {
                                 shares = Number(daily.value) / Number(period_weekly.value);
                             }
                         } else {
                             if(period_all.value == 1) {
-                                switch(Number(daily.value)) {
-                                    case 28:
-                                        shares = 28 - 8;
-                                        break;
-                                    case 56:
-                                        shares = 56 - 16;
-                                        break;
-                                }
+								shares = Number(daily.value)
+                                /* switch(Number(daily.value)) { */
+                                /*     case 28: */
+                                /*         shares = 28 - 8; */
+                                /*         break; */
+                                /*     case 56: */
+                                /*         shares = 56 - 16; */
+                                /*         break; */
+                                /* } */
                             } else {
                                 shares = Number(daily.value) / Number(period_all.value);
                             }

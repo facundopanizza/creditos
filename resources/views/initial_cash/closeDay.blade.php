@@ -8,6 +8,7 @@
         <th scope="col"></th>
         <th scope="col">Ingreso</th>
         <th scope="col">Egreso</th>
+        <th scope="col">Gastos</th>
         <th scope="col">Total</th>
     </tr>
 </thead>
@@ -16,25 +17,22 @@
         <td>Caja Inicial</td>
         <td>{{ $initialCash->entry_money }}</td>
         <td></td>
+        <td></td>
         <td>{{ $initialCash->entry_money }}</td>
     </tr>
     <tr>
         <td>Cobradores</td>
         <td class="text-success">+{{ $moneyFromPayments }}</td>
         <td class="text-danger">-{{ $moneyFromCredits }}</td>
-        @if($moneyFromCredits > $moneyFromPayments)
-            <td class="text-danger">-{{ $moneyFromCredits - $moneyFromPayments }}</td>
+        <td class="text-danger">-{{ $expenses }}</td>
+        @if(($moneyFromCredits + $expenses) > $moneyFromPayments)
+            <td class="text-danger">-{{ $moneyFromCredits + $expenses - $moneyFromPayments }}</td>
         @else
-            <td class="text-success">+{{ $moneyFromPayments - $moneyFromCredits }}</td>
+            <td class="text-success">+{{ $moneyFromPayments - $moneyFromCredits + $expenses }}</td>
         @endif
     </tr>
     <tr>
-        <td>Gastos</td>
         <td></td>
-        <td class="text-danger">-{{ $expenses }}</td>
-        <td class="text-danger">-{{ $expenses }}</td>
-    </tr>
-    <tr>
         <td></td>
         <td></td>
         <td></td>

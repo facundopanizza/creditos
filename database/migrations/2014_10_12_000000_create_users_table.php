@@ -20,10 +20,10 @@ class CreateUsersTable extends Migration
             // Mio
             $table->string('first_name');
             $table->string('last_name');
-            $table->unsignedInteger('dni')->unique();
+            $table->string('dni')->unique();
             $table->string('role');
             $table->unsignedDecimal('wallet', 20, 2)->default(0);
-            $table->unsignedDecimal('commission')->default(0);
+            $table->unsignedDecimal('commission')->default(4);
             // ---
             $table->string('password');
             $table->rememberToken();

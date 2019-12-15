@@ -10,6 +10,9 @@
         <th scope="col">Nombre</th>
         <th scope="col">Apellido</th>
         <th scope="col">DNI</th>
+		@if(Auth::user()->role == 'admin')
+			<th scope="col">Vendedor</th>
+		@endif
         <th></th>
         <th></th>
         <th></th>
@@ -23,6 +26,9 @@
         <td>{{ $client->first_name }}</td>
         <td>{{ $client->last_name }}</td>
         <td>{{ $client->dni }}</td>
+		@if(Auth::user()->role == 'admin')
+			<td>{{ $client->seller->first_name . ' ' . $client->seller->last_name }}</td>
+		@endif
         <td><a href="/clients/{{ $client->id }}" class="btn btn-primary">Ver Cliente</a></td>
         <td><a href="/clients/{{ $client->id }}/credits/create" class="btn btn-primary">Nuevo Credito</a></td>
         <td><a href="/clients/{{ $client->id }}/edit" class="btn btn-primary">Editar</a></td>

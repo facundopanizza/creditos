@@ -16,7 +16,8 @@
             @foreach($sellers as $seller)
             <div class="form-group">
                 <input type="checkbox" name="sellers[]" value="{{ $seller->id }}">
-                <label for="sellers">{{ $seller->first_name . ' ' . $seller->last_name}} - Entrega {{ $seller->wallet }}</label>
+				<label for="sellers">{{ $seller->first_name . ' ' . $seller->last_name}} - Entrega {{ $seller->wallet }}</label>
+				<a class="btn btn-primary btn-sm" href="/users/{{ $seller->id }}/resume">Ver Detalle</a>
             </div>
             @endforeach
 

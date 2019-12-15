@@ -58,8 +58,9 @@ class RegisterController extends Controller
             'first_name' => ['required', 'string', 'max:255'],
             'last_name' => ['required', 'string', 'max:255'],
             'role' => ['required', 'string', 'regex:/seller/'],
-            'dni' => ['required', 'integer', 'unique:users'],
+            'dni' => ['required', 'string', 'unique:users'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+			'commission' => ['numeric'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
         ]);
     }

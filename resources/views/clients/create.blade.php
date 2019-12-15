@@ -35,7 +35,7 @@
 
                 <div class="row">
                     <div class="form-group col-md-6">
-                        <label for="phone">Numbero de Telefono</label>
+                        <label for="phone">Numero de Telefono</label>
                         <input type="text" class="form-control @error('phone') is-invalid @enderror" name="phone" placeholder="12345678" value="{{ old('phone') }}" required>
                         @error('phone')
                         <div class="invalid-feedback">
@@ -89,18 +89,6 @@
                     </div>
 
                     <div class="form-group col-md-6">
-                        <label for="maximum_credit">Monto Maximo de Credito</label>
-                        <input type="number" class="form-control @error('maximum_credit') is-invalid @enderror" name="maximum_credit" placeholder="12345678" value="{{ old('maximum_credit') }}" required>
-                        @error('maximum_credit')
-                        <div class="invalid-feedback">
-                            {{ $message }}
-                        </div>
-                        @enderror
-                    </div>
-                </div>
-
-                <div class="row">
-                    <div class="form-group col-md-6">
                         <label for="dni">DNI</label>
                         <input type="text" class="form-control @error('dni') is-invalid @enderror" name="dni" placeholder="12345678" value="{{ old('dni') }}" required>
                         @error('dni')
@@ -109,8 +97,8 @@
                         </div>
                         @enderror
                     </div>
-                </div>
-                <button type="submit" class="btn btn-primary">Crear</button>
+                </div>	
+				<button type="submit" class="btn btn-primary">Crear</button>
             </form>
         </div>
     </div>

@@ -29,9 +29,11 @@ class InitialCashController extends Controller
 
         $initialCash = InitialCash::all()->last();
 
-        if($initialCash->active === 0) {
-            $initialCash = null;
-        }
+		if(!empty($initialCash)) {
+			if($initialCash->active === 0) {
+				$initialCash = null;
+			}
+		}
 
         return view('initial_cash.index')->withInitialCash($initialCash);
     }
@@ -68,7 +70,7 @@ class InitialCashController extends Controller
             'money' => $validated['entry_money'],
         ]);
 
-        return redirect('/users');
+        return redirect()->back();
     }
 
     /**
@@ -130,6 +132,8 @@ class InitialCashController extends Controller
     }
 
     public function cashEntryStore(Request $request) {
+		$initialCash = InitialCash::all()->last();
+
         foreach($request->sellers as $seller) {
             $user = User::find($seller);
             $initialCash = InitialCash::all()->last();
@@ -149,6 +153,29 @@ class InitialCashController extends Controller
 
         return redirect('/');
     }
+
+	public function individualCashEntryStore(User $user)
+	{
+		if($user->money == 0) {
+			return redirect()->back();
+		}
+
+		$initialCash = InitialCash::all()->last();
+
+		$cash_entry = CashEntry::create([
+			'seller_id' => $user->id,
+			'initialCash_id' => $initialCash->id,
+			'money' => $user->wallet,
+		]);
+
+		$user->wallet = 0;
+		$user->save();
+
+		$initialCash->money += $cash_entry->money;
+		$initialCash->save();
+
+		return redirect('/cash_entries');
+	}
     
     public function closeDay() {
         $users = User::all();

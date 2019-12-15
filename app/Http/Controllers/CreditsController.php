@@ -33,20 +33,9 @@ class CreditsController extends Controller
      */
     public function create(Client $client)
     {
-        $numberOfCredits = 0;
-        $credits = collect();
-
-        foreach($client->credits as $credit) {
-            if($credit->credit_cancelled === 0) {
-                $credits->add($credit);
-                $numberOfCredits += 1;
-            }
-        }
-
-        if($numberOfCredits >= $client->max_simultaneous_credits && $client->max_simultaneous_credits !== null) {
-            $message = 'El cliente tiene  ' . $numberOfCredits . ' creditos sin terminar de pagar y no puede crear un nuevo credito.';
-            return view('credits.create', ['client' => $client, 'credits' => $credits, 'errorMessage' => $message]);
-        }
+		if(Auth::user()->id != $client->seller_id && Auth::user()->role != 'admin') {
+			return redirect()->back();
+		}
 
         return view('credits.create', ['client' => $client]);
     }
@@ -70,101 +59,139 @@ class CreditsController extends Controller
 
         $client = Client::find($validated['client_id']);
 
-        $numberOfCredits = 0;
-        $credits = collect();
+		if($client->maximum_credit < $validated['money']) {
+			$validator = Validator::make([], []);
+			$validator->getMessageBag()->add('money', 'El monto maximo de credito autorizado para este cliente es de ' . $client->maximum_credit);
+			return redirect()->back()->withErrors($validator)->withInput();
+		}
 
-        foreach($client->credits as $credit) {
-            if($credit->credit_cancelled === 0) {
-                $credits->add($credit);
-                $numberOfCredits += 1;
-            }
-        }
+		if(Auth::user()->id != $client->seller_id && Auth::user()->role != 'admin') {
+			return redirect()->back();
+		}
 
-        if($validated['money'] > $client->maximum_credit) {
-            $validator = Validator::make([], []);
-            $validator->getMessageBag()->add('money', 'El monto maximo de credito autorizado para este cliente es de ' . $client->maximum_credit);
-            return redirect()->back()->withErrors($validator)->withInput();
-        }
+		$activeCredits = $client->credits->where('credit_cancelled', 0);
 
-        if(Auth::user()->wallet < $validated['money']) {
-                $message = 'No tienes dinero disponible para realizar este prestamo.';
-                $validator = Validator::make([], []);
-                $validator->getMessageBag()->add('money', $message);
-                return redirect()->back()->withErrors($validator)->withInput()->withCredits($credits);
-        }
+		if($activeCredits->count() > 0) {
+			$payed = 0;
+			$creditMoney = 0;
 
-        if(isset($validated['credit_to_cancel'])) {
-            $debtCredit = Credit::find($validated['credit_to_cancel']);
-            $debt = 0;
-            foreach($debtCredit->shares as $share) {
-                if($share->share_cancelled !== 1) {
-                    $payed = 0;
-                    foreach($share->payments as $payment) {
-                        $payed += $payment->payment_amount;
-                    }
-                    $debt += $share->money - $payed;
-                }
-            }
+			foreach($activeCredits as $activeCredit) {
+				$creditMoney += $activeCredit->money;
+				$creditMoney += $activeCredit->profit;
 
-            if($validated['money'] <= $debt) {
-                $message = 'El monto a prestar es menor que la deuda del cliente.';
-                $validator = Validator::make([], []);
-                $validator->getMessageBag()->add('credit_to_cancel', $message);
-                return redirect()->back()->withErrors($validator)->withInput()->withCredits($credits);
-            }else {
-                foreach($debtCredit->shares as $share) {
-                    if(empty($share->payments->first())) {
-                        $share->share_cancelled = 1;
-                        $share->save();
+				foreach($activeCredit->shares as $share) {
+					foreach($share->payments as $payment) {
+						$payed += $payment->payment_amount;
+					}
+				}
+			}
 
-                        $sharePayment = SharePayment::create([
-                            'share_id' => $share->id,
-                            'payment_amount' => $share->money,
-                        ]);
+			$debt = $creditMoney - $payed;
 
-                        Expense::create([
-                            'seller_id' => Auth::user()->id,
-                            'sharePayment_id' => $sharePayment->id,
-                            'money' => $sharePayment->payment_amount,
-                        ]);
+			if(($debt + $validated['money']) > $client->maximum_credit) {
+				$validator = Validator::make([], []);
+				$validator->getMessageBag()->add('money', 'El cliente ya tiene otros creditos activos y la suma total de los creditos supera el limite de prestamo de este cliente.');
+				return redirect()->back()->withErrors($validator)->withInput();
+			}
+		}
 
-                        Auth::user()->wallet += $sharePayment->payment_amount;
-                        Auth::user()->save();
-                    } else {
-                        $payed = 0;
-                        foreach($share->payments as $payment) {
-                            $payed += $payment->payment_amount;
-                        }
+        /* $numberOfCredits = 0; */
+        /* $credits = collect(); */
 
-                        $debt_of_payment = $share->money - $payed;
+        /* foreach($client->credits as $credit) { */
+        /*     if($credit->credit_cancelled === 0) { */
+        /*         $credits->add($credit); */
+        /*         $numberOfCredits += 1; */
+        /*     } */
+        /* } */
 
-                        $sharePayment = SharePayment::create([
-                            'share_id' => $share->id,
-                            'payment_amount' => $debt,
-                        ]);
+        /* if($validated['money'] > $client->maximum_credit) { */
+        /*     $validator = Validator::make([], []); */
+        /*     $validator->getMessageBag()->add('money', 'El monto maximo de credito autorizado para este cliente es de ' . $client->maximum_credit); */
+        /*     return redirect()->back()->withErrors($validator)->withInput(); */
+        /* } */
 
-                        Expense::create([
-                            'seller_id' => Auth::user()->id,
-                            'sharePayment_id' => $sharePayment->id,
-                            'money' => $debt_of_payment,
-                        ]);
+        /* if(Auth::user()->wallet < $validated['money']) { */
+        /*         $message = 'No tienes dinero disponible para realizar este prestamo.'; */
+        /*         $validator = Validator::make([], []); */
+        /*         $validator->getMessageBag()->add('money', $message); */
+        /*         return redirect()->back()->withErrors($validator)->withInput()->withCredits($credits); */
+        /* } */
 
-                        Auth::user()->wallet += $debt_of_payment;
-                        Auth::user()->save();
-                    }
-                }
+        /* if(isset($validated['credit_to_cancel'])) { */
+        /*     $debtCredit = Credit::find($validated['credit_to_cancel']); */
+        /*     $debt = 0; */
+        /*     foreach($debtCredit->shares as $share) { */
+        /*         if($share->share_cancelled !== 1) { */
+        /*             $payed = 0; */
+        /*             foreach($share->payments as $payment) { */
+        /*                 $payed += $payment->payment_amount; */
+        /*             } */
+        /*             $debt += $share->money - $payed; */
+        /*         } */
+        /*     } */
 
-                $credit->credit_cancelled = 1;
-                $credit->save();
-            }
-        }else {
-            if($numberOfCredits >= $client->max_simultaneous_credits) {
-                $message = 'El cliente tiene  ' . $numberOfCredits . ' creditos sin terminar de pagar y no puede crear un nuevo credito.';
-                $validator = Validator::make([], []);
-                $validator->getMessageBag()->add('money', $message);
-                return redirect()->back()->withErrors($validator)->withInput()->withCredits($credits);
-            }
-        }
+        /*     if($validated['money'] <= $debt) { */
+        /*         $message = 'El monto a prestar es menor que la deuda del cliente.'; */
+        /*         $validator = Validator::make([], []); */
+        /*         $validator->getMessageBag()->add('credit_to_cancel', $message); */
+        /*         return redirect()->back()->withErrors($validator)->withInput()->withCredits($credits); */
+        /*     }else { */
+        /*         foreach($debtCredit->shares as $share) { */
+        /*             if(empty($share->payments->first())) { */
+        /*                 $share->share_cancelled = 1; */
+        /*                 $share->save(); */
+
+        /*                 $sharePayment = SharePayment::create([ */
+        /*                     'seller_id' => Auth::user()->id, */
+        /*                     'share_id' => $share->id, */
+        /*                     'payment_amount' => $share->money, */
+        /*                 ]); */
+
+        /*                 Expense::create([ */
+        /*                     'seller_id' => Auth::user()->id, */
+        /*                     'sharePayment_id' => $sharePayment->id, */
+        /*                     'money' => $sharePayment->payment_amount, */
+        /*                 ]); */
+
+        /*                 Auth::user()->wallet += $sharePayment->payment_amount; */
+        /*                 Auth::user()->save(); */
+        /*             } else { */
+        /*                 $payed = 0; */
+        /*                 foreach($share->payments as $payment) { */
+        /*                     $payed += $payment->payment_amount; */
+        /*                 } */
+
+        /*                 $debt_of_payment = $share->money - $payed; */
+
+        /*                 $sharePayment = SharePayment::create([ */
+        /*                     'seller_id' => Auth::user()->id, */
+        /*                     'share_id' => $share->id, */
+        /*                     'payment_amount' => $debt, */
+        /*                 ]); */
+
+        /*                 Expense::create([ */
+        /*                     'seller_id' => Auth::user()->id, */
+        /*                     'sharePayment_id' => $sharePayment->id, */
+        /*                     'money' => $debt_of_payment, */
+        /*                 ]); */
+
+        /*                 Auth::user()->wallet += $debt_of_payment; */
+        /*                 Auth::user()->save(); */
+        /*             } */
+        /*         } */
+
+        /*         $credit->credit_cancelled = 1; */
+        /*         $credit->save(); */
+        /*     } */
+        /* }else { */
+        /*     if($numberOfCredits >= $client->max_simultaneous_credits) { */
+        /*         $message = 'El cliente tiene  ' . $numberOfCredits . ' creditos sin terminar de pagar y no puede crear un nuevo credito.'; */
+        /*         $validator = Validator::make([], []); */
+        /*         $validator->getMessageBag()->add('money', $message); */
+        /*         return redirect()->back()->withErrors($validator)->withInput()->withCredits($credits); */
+        /*     } */
+        /* } */
 
         $expiration_date = Carbon::now();
 
@@ -179,19 +206,20 @@ class CreditsController extends Controller
         $credit->expiration_date = $expiration_date->addDays($validated['daily']);
 
         if($validated['period'] == 1) {
-            switch($validated['daily']) {
-                case 21:
-                    $shares = 21 - 6;
-                    break;
-                case 28:
-                    $shares = 28 - 8;
-                    break;
-                case 42:
-                    $shares = 42 - 12;
-                    break;
-                case 56:
-                    $shares = 56 - 16;
-            }
+			$shares = $validated['daily'];
+            /* switch($validated['daily']) { */
+            /*     case 21: */
+            /*         $shares = 21 - 6; */
+            /*         break; */
+            /*     case 28: */
+            /*         $shares = 28 - 8; */
+            /*         break; */
+            /*     case 42: */
+            /*         $shares = 42 - 12; */
+            /*         break; */
+            /*     case 56: */
+            /*         $shares = 56 - 16; */
+            /* } */
         } else {
             $shares = $validated['daily'] / $credit->period;
         }
@@ -200,7 +228,7 @@ class CreditsController extends Controller
         $credit->save();
 
             $share_expiration =  Carbon::now();
-            $today = Carbon::now();
+            $today = $share_expiration;
         for($i = 0; $i < $shares; $i++) {
             if($i == 0) {
                 if($today->isoFormat('dddd') == 'Saturday' || $today->isoFormat('dddd') == 'Sunday') {
@@ -241,6 +269,10 @@ class CreditsController extends Controller
      */
     public function show(Credit $credit)
     {
+		if(Auth::user()->id != $credit->client->seller_id && Auth::user()->role != 'admin') {
+			return redirect()->back();
+		}
+
         return view('credits.show', ['credit' => $credit]);
     }
 

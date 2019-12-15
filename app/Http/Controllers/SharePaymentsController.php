@@ -1,5 +1,6 @@
 <?php
 
+
 namespace App\Http\Controllers;
 
 use App\Expense;
@@ -27,6 +28,10 @@ class SharePaymentsController extends Controller
      */
     public function create(Share $share)
     {
+		if(Auth::user()->id != $share->credit->client->seller_id && Auth::user()->role != 'admin') {
+			return redirect()->back();
+		}
+
         if($share->share_cancelled == 1) {
             return redirect()->back();
         }
@@ -42,6 +47,10 @@ class SharePaymentsController extends Controller
      */
     public function store(Share $share, Request $request)
     {
+		if(Auth::user()->id != $share->credit->client->seller_id && Auth::user()->role != 'admin') {
+			return redirect()->back();
+		}
+
         $validated = $request->validate([
             'payment_amount' => ['required'],
         ]);
@@ -63,15 +72,17 @@ class SharePaymentsController extends Controller
         }
 
         if(($share->money) - ($validated['payment_amount'] + $payed) == 0) {
-            $share->share_cancelled = true;
-            $share->save();
             $sharePayment = SharePayment::create([
                 'share_id' => $share->id,
+                'seller_id' => Auth::user()->id,
                 'payment_amount' => $validated['payment_amount']
             ]);
+            $share->share_cancelled = true;
+            $share->save();
         } else {
             $sharePayment = SharePayment::create([
                 'share_id' => $share->id,
+                'seller_id' => Auth::user()->id,
                 'payment_amount' => $validated['payment_amount']
             ]);
         }

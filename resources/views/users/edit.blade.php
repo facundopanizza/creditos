@@ -48,7 +48,7 @@
                             <label for="dni" class="col-md-4 col-form-label text-md-right">{{ __('DNI') }}</label>
 
                             <div class="col-md-6">
-                                <input value="{{ $user->dni }}" id="dni" type="number" class="form-control @error('dni') is-invalid @enderror" name="dni" value="{{ old('dni') }}" required autocomplete="dni" autofocus>
+                                <input value="{{ $user->dni }}" id="dni" type="text" class="form-control @error('dni') is-invalid @enderror" name="dni" value="{{ old('dni') }}" required autocomplete="dni" autofocus>
 
                                 @error('dni')
                                     <span class="invalid-feedback" role="alert">
@@ -65,6 +65,20 @@
                                 <input value="{{ $user->email }}" id="email" type="email" class="form-control @error('email') is-invalid @enderror" name="email" value="{{ old('email') }}" required autocomplete="email">
 
                                 @error('email')
+                                    <span class="invalid-feedback" role="alert">
+                                        <strong>{{ $message }}</strong>
+                                    </span>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <label for="commission" class="col-md-4 col-form-label text-md-right">{{ __('Comision del Vendedor') }}</label>
+
+                            <div class="col-md-6">
+                                <input value="{{ $user->commission }}" id="commission" type="number" class="form-control @error('commission') is-invalid @enderror" name="commission" value="{{ old('commission') }}" required autocomplete="commission">
+
+                                @error('commission')
                                     <span class="invalid-feedback" role="alert">
                                         <strong>{{ $message }}</strong>
                                     </span>

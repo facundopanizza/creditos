@@ -42,17 +42,19 @@ class UsersController extends Controller
                 $validated = $request->validate([
                     'first_name' => ['required', 'string', 'max:255'],
                     'last_name' => ['required', 'string', 'max:255'],
-                    'dni' => ['required', 'integer'],
+                    'dni' => ['required', 'string'],
                     'email' => ['required', 'string', 'email', 'max:255'],
                     'password' => ['required', 'string', 'min:8', 'confirmed'],
+					'commission' => ['required', 'numeric']
                 ]);
             } else {
                 $validated = $request->validate([
                     'first_name' => ['required', 'string', 'max:255'],
                     'last_name' => ['required', 'string', 'max:255'],
-                    'dni' => ['required', 'integer', 'unique:users'],
+                    'dni' => ['required', 'string', 'unique:users'],
                     'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
                     'password' => ['required', 'string', 'min:8', 'confirmed'],
+					'commission' => ['required', 'numeric']
                 ]);
             }
 
@@ -60,6 +62,7 @@ class UsersController extends Controller
             $user->last_name = $validated['last_name'];
             $user->dni = $validated['dni'];
             $user->email = $validated['email'];
+            $user->commission = $validated['commission'];
             $user->password = Hash::make($validated['password']);
 
             $user->save();
@@ -69,22 +72,25 @@ class UsersController extends Controller
                 $validated = $request->validate([
                     'first_name' => ['required', 'string', 'max:255'],
                     'last_name' => ['required', 'string', 'max:255'],
-                    'dni' => ['required', 'integer'],
+                    'dni' => ['required', 'string'],
                     'email' => ['required', 'string', 'email', 'max:255'],
+					'commission' => ['required', 'numeric']
                 ]);
             }
             else {
                 $validated = $request->validate([
                     'first_name' => ['required', 'string', 'max:255'],
                     'last_name' => ['required', 'string', 'max:255'],
-                    'dni' => ['required', 'integer', 'unique:users'],
+                    'dni' => ['required', 'string', 'unique:users'],
                     'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+					'commission' => ['required', 'numeric']
                 ]);
             }
 
             $user->first_name = $validated['first_name'];
             $user->last_name = $validated['last_name'];
             $user->dni = $validated['dni'];
+            $user->commission = $validated['commission'];
             $user->email = $validated['email'];
 
             $user->save();
@@ -135,22 +141,28 @@ class UsersController extends Controller
         $sharePayments = SharePayment::whereDate('created_at', $today)->get();
 
         $shares = collect();
-        $shares->paymentsCount = $sharePayments->count();
+        $shares->paymentsCount = 0;
         $payed = 0;
         foreach($sharePayments as $sharePayment) {
-            $payed += $sharePayment->payment_amount;
+			if($sharePayment->seller_id === $user->id) {
+				$payed += $sharePayment->payment_amount;
+				$shares->paymentsCount += 1;
+			}
         }
         $shares->paymentsAmount = $payed;
 
         $expiredShares = Share::whereDate('expiration_date', '<', $today)->get();
+        $shares->expiredCount = 0;
         $debt = 0;
         foreach($expiredShares as $expiredShare) {
-            $debt += $expiredShare->money;
+			if($expiredShare->credit->seller_id === Auth::user()->id) {
+				$debt += $expiredShare->money;
+				$shares->expiredCount += 1;
+			}
         }
-        $shares->expiredCount = $expiredShares->count();
         $shares->expiredAmount = $debt;
 
-        $todayCredits = Credit::whereDate('created_at', $today)->get();
+        $todayCredits = Credit::whereDate('created_at', $today)->where('seller_id', $user->id)->get();
         $credits = collect();
 
         $creditMoney = 0;
@@ -160,7 +172,7 @@ class UsersController extends Controller
         $credits->todayCount = $todayCredits->count();
         $credits->todayMoney = $creditMoney;
 
-        $expiredCredits = Credit::where('expiration_date', '<', $today)->where('credit_cancelled', 0)->get();
+        $expiredCredits = Credit::where('expiration_date', '<', $today)->where('seller_id', $user->id)->where('credit_cancelled', 0)->get();
         $expiredMoney = 0;
         foreach($expiredCredits as $expiredCredit) {
             $expiredMoney += $expiredCredit->money;
@@ -168,7 +180,7 @@ class UsersController extends Controller
         $credits->expiredCount = $expiredCredits->count();
         $credits->expiredMoney = $expiredMoney;
 
-        $cancelledCredits = Credit::whereDate('updated_at', $today)->whereColumn('updated_at', '>', 'created_at')->where('credit_cancelled', 1)->get();
+        $cancelledCredits = Credit::whereDate('updated_at', $today)->whereColumn('updated_at', '>', 'created_at')->where('seller_id', $user->id)->where('credit_cancelled', 1)->get();
         $cancelledMoney = 0;
         foreach($cancelledCredits as $cancelledCredit) {
             $cancelledMoney += $cancelledCredit->money;
@@ -184,7 +196,7 @@ class UsersController extends Controller
         }
         $expenses->expensesCount = $todayExpenses->count();
         $expenses->expensesMoney = $expensesMoney;
-        
+       
         
 
         return view('users.resume', [
@@ -194,6 +206,102 @@ class UsersController extends Controller
             'expenses' => $expenses,
             ]);
     }
+
+	public function resumeShares(User $user)
+	{
+        if(Auth::user()->role !== 'admin') {
+            return redirect('/');
+        }
+
+        $today = Carbon::today();
+        $sharePayments = SharePayment::whereDate('created_at', $today)->get();
+
+        $shares = collect();
+		$shares->allPayed = collect();
+        $shares->paymentsCount = 0;
+        $payed = 0;
+        foreach($sharePayments as $sharePayment) {
+			if($sharePayment->seller_id === $user->id) {
+				$payed += $sharePayment->payment_amount;
+				$shares->paymentsCount += 1;
+				$shares->allPayed->add($sharePayment);
+			}
+        }
+
+        $shares->paymentsAmount = $payed;
+
+        $expiredShares = Share::whereDate('expiration_date', '<', $today)->get();
+		$shares->allExpired = collect();
+        $shares->expiredCount = 0;
+        $debt = 0;
+        foreach($expiredShares as $expiredShare) {
+			if($expiredShare->credit->seller_id === Auth::user()->id) {
+				$debt += $expiredShare->money;
+				$shares->expiredCount += 1;
+				$shares->allExpired->add($expiredShare);
+			}
+        }
+        $shares->expiredAmount = $debt;
+
+		return view('users.resumeShares')->withShares($shares)->withUser($user);
+	}
+
+	public function resumeCredits(User $user)
+	{
+        $today = Carbon::today();
+
+        $todayCredits = Credit::whereDate('created_at', $today)->where('seller_id', $user->id)->get();
+        $credits = collect();
+		$credits->allNormal = collect();
+
+        $creditMoney = 0;
+        foreach($todayCredits as $credit) {
+            $creditMoney += $credit->money;
+			$credits->allNormal->add($credit);
+        }
+        $credits->todayCount = $todayCredits->count();
+        $credits->todayMoney = $creditMoney;
+
+        $expiredCredits = Credit::where('expiration_date', '<', $today)->where('seller_id', $user->id)->where('credit_cancelled', 0)->get();
+        $expiredMoney = 0;
+		$credits->allExpired = collect();
+        foreach($expiredCredits as $expiredCredit) {
+            $expiredMoney += $expiredCredit->money;
+			$credits->allExpired->add($expiredCredit);
+        }
+        $credits->expiredCount = $expiredCredits->count();
+        $credits->expiredMoney = $expiredMoney;
+
+        $cancelledCredits = Credit::whereDate('updated_at', $today)->whereColumn('updated_at', '>', 'created_at')->where('seller_id', $user->id)->where('credit_cancelled', 1)->get();
+        $cancelledMoney = 0;
+		$credits->allCancelled = collect();
+        foreach($cancelledCredits as $cancelledCredit) {
+            $cancelledMoney += $cancelledCredit->money;
+			$credits->allCancelled->add($cancelledCredit);
+        }
+        $credits->cancelledCount = $cancelledCredits->count();
+        $credits->cancelledMoney = $cancelledMoney;
+
+		return view('users.resumeCredits')->withCredits($credits)->withUser($user);
+	}
+
+	public function resumeExpenses(User $user)
+	{
+        $today = Carbon::today();
+
+        $expenses = collect();
+		$expenses->allExpenses = collect();
+        $todayExpenses = Expense::whereDate('created_at', $today)->where('seller_id', $user->id)->where('description', '!=', null)->get();
+        $expensesMoney = 0;
+        foreach($todayExpenses as $expense) {
+            $expensesMoney += $expense->money;
+			$expenses->allExpenses->add($expense);
+        }
+        $expenses->expensesCount = $todayExpenses->count();
+        $expenses->expensesMoney = $expensesMoney;
+
+		return view('users.resumeExpenses')->withExpenses($expenses)->withUser($user);
+	}
 
     public function sellersReport()
     {
@@ -260,7 +368,7 @@ class UsersController extends Controller
             return view('initial_cash.results', ['sellers' => $sellers]);
         } elseif(isset($request->dni)) {
             $validated = $request->validate([
-                'dni' => ['integer']
+                'dni' => ['string']
             ]);
 
             $sellers = User::where('dni', $validated['dni'])->first();
