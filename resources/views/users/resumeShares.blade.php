@@ -33,7 +33,7 @@
 			<?php
 				$count = 0;
 			?>
-			@foreach($shares->allPayed as $share)
+			@foreach($shares->allPayed->sortByDesc('created_at') as $share)
 				<?php
 					$count += 1;
 				?>
@@ -68,7 +68,7 @@
 			<?php
 				$count = 0;
 			?>
-			@foreach($shares->allExpired as $share)
+			@foreach($shares->allExpired->sortByDesc('created_at') as $share)
 				<?php
 					$count += 1;
 				?>

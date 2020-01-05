@@ -16,6 +16,7 @@
         <th scope="col">Plata en Mano</th>
         <th></th>
         <th></th>
+        <th></th>
     </tr>
 </thead>
 <tbody>
@@ -32,6 +33,7 @@
         <td>{{ $user->wallet }}</td>
         <td><a href="/users/{{ $user->id }}/edit" class="btn btn-primary">Editar</a></td>
         <td><a href="/users/{{ $user->id }}/resume" class="btn btn-primary">Resumen</a></td>
+        <td><a href="/users/{{ $user->id }}/clients" class="btn btn-primary">Ver Clientes</a></td>
         <td>
             <form action="/users/{{ $user->id }}/disable" method="POST">
                 @csrf

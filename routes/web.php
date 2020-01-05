@@ -33,6 +33,7 @@ Route::middleware('auth')->group(function() {
     Route::put('/users/{user}', 'UsersController@update');
     Route::put('/users/{user}/disable', 'UsersController@disable');
     Route::put('/users/{user}/enable', 'UsersController@enable');
+    Route::get('/users/{user}/clients', 'UsersController@clientsView');
 
 
     Route::resource('clients', 'ClientsController');
@@ -48,8 +49,13 @@ Route::middleware('auth')->group(function() {
     Route::post('/initial_cash', 'InitialCashController@store');
     Route::get('/cash_entries', 'InitialCashController@cashEntry');
     Route::post('/cash_entries', 'InitialCashController@cashEntryStore');
+    Route::get('/expenses_box', 'ExpensesBoxController@index');
+    Route::get('/expenses_box/create', 'ExpensesBoxController@create');
+    Route::post('/expenses_box', 'ExpensesBoxController@store');
+    Route::get('/expenses_box/{expensesBox}', 'ExpensesBoxController@show');
     Route::get('/close_day', 'InitialCashController@closeDay');
     Route::post('/close_day', 'InitialCashController@closeDayStore');
+    Route::get('/closed_days', 'InitialCashController@closedDays');
 
     Route::resource('expenses', 'ExpenseController');
 });

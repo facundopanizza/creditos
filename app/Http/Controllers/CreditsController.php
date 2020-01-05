@@ -202,7 +202,8 @@ class CreditsController extends Controller
         $credit->money = $validated['money'];
         $credit->interest_rate = ($validated['interest_rate'] / 28) * $request['daily'];
         $credit->period = $validated['period'] == 1 ? $validated['daily'] : $validated['period'];
-        $credit->profit = ($validated['money'] * $credit->interest_rate) / 100;
+        $credit->seller_profit = (Auth::user()->commission * $credit->money) / 100;
+        $credit->profit = (($validated['money'] * $credit->interest_rate) / 100) - $credit->seller_profit;
         $credit->expiration_date = $expiration_date->addDays($validated['daily']);
 
         if($validated['period'] == 1) {
@@ -271,9 +272,19 @@ class CreditsController extends Controller
     {
 		if(Auth::user()->id != $credit->client->seller_id && Auth::user()->role != 'admin') {
 			return redirect()->back();
-		}
+        }
+        
+        $payed = 0;
+        if($credit->credit_cancelled == 0) {
+            foreach($credit->shares as $share) {
+                foreach($share->payments as $payments) {
+                    $payed += $payments->payment_amount;
+                }
+            }
+        }
+        $debt = ($credit->money + $credit->profit + $credit->seller_profit) - $payed;
 
-        return view('credits.show', ['credit' => $credit]);
+        return view('credits.show', ['credit' => $credit, 'debt' => $debt]);
     }
 
     /**

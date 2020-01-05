@@ -12,6 +12,7 @@
         <th scope="col">Dinero Prestado</th>
         <th scope="col">Interes</th>
         <th scope="col">Ganacia</th>
+        <th scope="col">Ganacia del Vendedor</th>
         <th scope="col">Período</th>
         <th scope="col">Fecha Creacion</th>
         <th scope="col">Fecha Vencimiento</th>
@@ -21,7 +22,7 @@
 </thead>
 <tbody>
     @if(Auth::user()->role === 'admin')
-        @foreach($credits as $credit)
+        @foreach($credits->sortByDesc('created_at') as $credit)
         <tr>
             <td>{{ $credit->id }}</td>
             <td>{{ $credit->seller->first_name . ' ' . $credit->seller->last_name }}</td>
@@ -29,6 +30,7 @@
             <td>{{ $credit->money }}</td>
             <td>{{ $credit->interest_rate }}</td>
             <td>{{ $credit->profit }}</td>
+            <td>{{ $credit->seller_profit }}</td>
             <td>{{ $credit->period }}</td>
             <td>{{ $credit->created_at }}</td>
             <td>{{ $credit->expiration_date }}</td>
@@ -43,7 +45,7 @@
         </tr>
         @endforeach
     @elseif(Auth::user()->role === 'seller')
-        @foreach(Auth::user()->credits as $credit)
+        @foreach(Auth::user()->credits->sortByDesc('created_at') as $credit)
         <tr>
             <td>{{ $credit->id }}</td>
             <td>{{ $credit->seller->first_name . ' ' . $credit->seller->last_name }}</td>

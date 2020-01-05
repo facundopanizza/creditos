@@ -48,8 +48,8 @@
             </div>
 
             <div class="row mt-3">
-                <div class="col-md">
-                    <span class="text-secondary">Cantidad Maxima de Creditos Simultaneos:</span> {{ $client->max_simultaneous_credits }}
+                <div class="col-md-3">
+                    <span class="text-secondary">Deuda Total del Cliente:</span> {{ $client->debt }}
                 </div>
             </div> 
 

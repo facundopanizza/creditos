@@ -20,7 +20,23 @@ class ClientsController extends Controller
 			$clients = Client::all();
 		} else {
 			$clients = Auth::user()->clients;
-		}
+        }
+        
+        foreach($clients as $client) {
+            $credits = $client->credits->where('credit_cancelled', '=', 0);
+            $client->payed = 0;
+            $client->totalCreditsValue = 0;
+            foreach($credits as $credit) {
+                $client->totalCreditsValue += $credit->money + $credit->profit + $credit->seller_profit;
+                foreach($credit->shares as $share) {
+                    foreach($share->payments as $payments) {
+                        $client->payed += $payments->payment_amount;
+                    }
+                }
+            }
+
+            $client->debt = $client->totalCreditsValue - $client->payed;
+        }
 
         return view('clients.index', ['clients' => $clients]);
     }
@@ -79,7 +95,21 @@ class ClientsController extends Controller
     {
 		if(Auth::user()->id != $client->seller_id && Auth::user()->role != 'admin') {
 			return redirect()->back();
-		}
+        }
+
+        $credits = $client->credits->where('credit_cancelled', '=', 0);
+        $client->payed = 0;
+        $client->totalCreditsValue = 0;
+        foreach($credits as $credit) {
+            $client->totalCreditsValue += $credit->money + $credit->profit + $credit->seller_profit;
+            foreach($credit->shares as $share) {
+                foreach($share->payments as $payments) {
+                    $client->payed += $payments->payment_amount;
+                }
+            }
+        }
+
+        $client->debt = $client->totalCreditsValue - $client->payed;
 
         return view('clients.show')->withClient($client);
     }
@@ -157,16 +187,16 @@ class ClientsController extends Controller
      * @param  \App\Client  $client
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Client $client)
-    {
-        if(Auth::user()->role !== 'admin') {
-            return redirect('/');
-        }
+    // public function destroy(Client $client)
+    // {
+    //     if(Auth::user()->role !== 'admin') {
+    //         return redirect('/');
+    //     }
 
-        $client->delete();
+    //     $client->delete();
 
-        return redirect('/clients');
-    }
+    //     return redirect('/clients');
+    // }
 
     public function search(Request $request)
     {

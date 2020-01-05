@@ -10,6 +10,7 @@ use App\Expense;
 use App\SharePayment;
 use App\User;
 use App\CloseDay;
+use App\ExpensesBox;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -147,6 +148,14 @@ class InitialCashController extends Controller
             $user->wallet = 0;
             $user->save();
 
+            $lastCash = InitialCash::where('active', '=', 1)->get()->last();
+            $expense = ExpensesBox::create([
+                'seller_id' => $user->id,
+                'cashEntries_id' => $cash_entry->id,
+                'money' => $cash_entry->money
+            ]);
+            $lastCash->money += $expense->money;
+
             $initialCash->money += $cash_entry->money;
             $initialCash->save();
         }
@@ -240,5 +249,12 @@ class InitialCashController extends Controller
         $lastDay->save();
 
         return redirect('/');
+    }
+
+    public function closedDays()
+    {
+        $closed_days = CloseDay::all();
+
+        return view('initial_cash.closed_days', ['closed_days' => $closed_days]);
     }
 }

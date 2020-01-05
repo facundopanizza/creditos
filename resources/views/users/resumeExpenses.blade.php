@@ -33,7 +33,7 @@
 			<?php
 				$count = 0;
 			?>
-			@foreach($expenses->allExpenses as $expense)
+			@foreach($expenses->allExpenses->sortByDesc('created_at') as $expense)
 			<?php
 				$count += 1;
 			?>

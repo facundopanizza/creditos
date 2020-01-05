@@ -17,9 +17,11 @@
         </div>
         <div class="row">
             <div class="col-md-3"><span class="text-secondary">Ganancia: </span>{{ $credit->profit }}</div>
+            <div class="col-md-3"><span class="text-secondary">Ganancia del Vendedor: </span>{{ ($credit->money * Auth::user()->commission) / 100 }}</div>
             <div class="col-md-3"><span class="text-secondary">Período: </span>{{ $credit->period }}</div>
             <div class="col-md-3"><span class="text-secondary">Fecha de Creacion: </span>{{ $credit->created_at }}</div>
             <div class="col-md-3"><span class="text-secondary">Fecha de Vencimiento: </span>{{ $credit->expiration_date }}</div>
+            <div class="col-md-3"><span class="text-secondary">Deuda del Cliente: </span>{{ $debt }}</div>
         </div>
         <h3>Cuotas</h3>
         <table class="table table-hover">

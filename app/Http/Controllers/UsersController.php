@@ -376,4 +376,25 @@ class UsersController extends Controller
 
         return view('initial_cash.index', ['sellers' => $sellers]);
     }
+
+    public function clientsView(User $user)
+    {
+    foreach($user->clients as $client) {
+        $credits = $client->credits->where('credit_cancelled', '=', 0);
+        $client->payed = 0;
+        $client->totalCreditsValue = 0;
+        foreach($credits as $credit) {
+            $client->totalCreditsValue += $credit->money + $credit->profit + $credit->seller_profit;
+            foreach($credit->shares as $share) {
+                foreach($share->payments as $payments) {
+                    $client->payed += $payments->payment_amount;
+                }
+            }
+        }
+
+        $client->debt = $client->totalCreditsValue - $client->payed;
+    }
+        
+        return view('users.clients')->withUser($user);
+    }
 }

@@ -21,6 +21,7 @@ class CreateCreditsTable extends Migration
             $table->unsignedDecimal('money', 20, 2);
             $table->unsignedDecimal('interest_rate');
             $table->unsignedDecimal('profit', 20, 2);
+            $table->unsignedDecimal('seller_profit', 20, 2);
             $table->string('period');
             $table->boolean('credit_cancelled')->default(0);
             $table->unsignedInteger('shares_numbers');

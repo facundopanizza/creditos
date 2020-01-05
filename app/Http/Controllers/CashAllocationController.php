@@ -7,6 +7,7 @@ use Carbon\Carbon;
 use App\InitialCash;
 use App\CashAllocation;
 use App\Expense;
+use App\ExpensesBox;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
@@ -72,18 +73,24 @@ class CashAllocationController extends Controller
             'money' => $validated['money']
         ]);
 
-        $user->wallet += $validated['money'];
         Expense::create([
             'seller_id' => $user->id,
             'cashAllocation_id' => $cashAllocation->id,
             'money' => $cashAllocation->money
         ]);
+        $user->wallet += $validated['money'];
         $user->save();
-        
-        $initial_cash = InitialCash::all()->last();
-        $initial_cash->money -= $cashAllocation->money;
-        $initial_cash->save();
 
+        ExpensesBox::create([
+            'seller_id' => $user->id,
+            'cashAllocation_id' => $cashAllocation->id,
+            'money' => $cashAllocation->money
+        ]);
+
+        $lastCash = InitialCash::where('active', '=', 1)->get()->last();
+        $lastCash->money -= $cashAllocation->money;
+        $lastCash->save();
+        
         return redirect('/initial_cash');
     }
 

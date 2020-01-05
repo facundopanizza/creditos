@@ -34,6 +34,7 @@
                                 <a class="dropdown-item" href="/close_day">Cerrar Caja Diaria</a>
                             @endif
                             <a class="dropdown-item" href="/cash_entries">Recibir dinero de Vendedor</a>
+                            <a class="dropdown-item" href="/closed_days">Ver Cajas Cerradas</a>
                         </div>
                     </li>
                     <li class="nav-item dropdown">

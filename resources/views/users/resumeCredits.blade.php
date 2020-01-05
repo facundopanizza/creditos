@@ -36,7 +36,7 @@
 			<?php
 				$count = 0;
 			?>
-			@foreach($credits->allNormal as $credit)
+			@foreach($credits->allNormal->sortByDesc('created_at') as $credit)
 				<?php
 					$count += 1;
 				?>
@@ -75,7 +75,7 @@
 			<?php
 				$count = 0;
 			?>
-			@foreach($credits->allCancelled as $credit)
+			@foreach($credits->allCancelled->sortByDesc('created_at') as $credit)
 				<?php
 					$count += 1;
 				?>
@@ -114,7 +114,7 @@
 			<?php
 				$count = 0;
 			?>
-			@foreach($credits->allExpired as $credit)
+			@foreach($credits->allExpired->sortByDesc('created_at') as $credit)
 				<?php
 					$count += 1;
 				?>
