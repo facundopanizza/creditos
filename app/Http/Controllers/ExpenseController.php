@@ -78,6 +78,10 @@ class ExpenseController extends Controller
      */
     public function show(Expense $expense)
     {
+		if(Auth::user()->id != $expense->seller_id && Auth::user()->role != 'admin') {
+			return redirect()->back();
+        }
+
         return view('expenses.show')->withExpense($expense);
     }
 

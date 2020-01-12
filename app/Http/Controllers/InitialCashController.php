@@ -165,9 +165,9 @@ class InitialCashController extends Controller
 
 	public function individualCashEntryStore(User $user)
 	{
-		if($user->money == 0) {
+		if($user->wallet == 0) {
 			return redirect()->back();
-		}
+        }
 
 		$initialCash = InitialCash::all()->last();
 
@@ -175,7 +175,13 @@ class InitialCashController extends Controller
 			'seller_id' => $user->id,
 			'initialCash_id' => $initialCash->id,
 			'money' => $user->wallet,
-		]);
+        ]);
+
+        $expense = ExpensesBox::create([
+            'seller_id' => $user->id,
+            'cashEntries_id' => $cash_entry->id,
+            'money' => $cash_entry->money
+        ]);
 
 		$user->wallet = 0;
 		$user->save();
@@ -257,4 +263,39 @@ class InitialCashController extends Controller
 
         return view('initial_cash.closed_days', ['closed_days' => $closed_days]);
     }
+
+    public function addMoney()
+    {
+        return view('initial_cash.add_money');
+    }
+
+	public function addMoneyStore(Request $request)
+	{
+        $validated = $request->validate([
+            'money' => ['required', 'integer']
+        ]);
+
+
+        $initialCash = InitialCash::all()->last();
+        
+        $user = Auth::user();
+
+		$cash_entry = CashEntry::create([
+			'seller_id' => $user->id,
+			'initialCash_id' => $initialCash->id,
+			'money' => $validated['money'],
+        ]);
+
+        $expense = ExpensesBox::create([
+            'seller_id' => $user->id,
+            'cashEntries_id' => $cash_entry->id,
+            'money' => $cash_entry->money,
+            'description' => 'Plata agregada a caja',
+        ]);
+
+		$initialCash->money += $cash_entry->money;
+		$initialCash->save();
+
+		return redirect('/initial_cash');
+	}
 }

@@ -118,9 +118,14 @@ class SharePaymentsController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Share $share)
     {
-        //
+        return view('share_payments.show')->withShare($share);
+    }
+
+    public function print(Share $share, SharePayment $sharePayment)
+    {
+        return view('share_payments.print')->withShare($share)->withPayment($sharePayment);
     }
 
     /**

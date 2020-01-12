@@ -22,7 +22,9 @@ class CreateClientsTable extends Migration
             $table->string('activity');
             $table->string('business_address');
             $table->string('home_address');
-            $table->unsignedBigInteger('maximum_credit')->default(5000);
+            $table->unsignedBigInteger('maximum_credit');
+            $table->boolean('multi_credit')->default(0);
+            $table->boolean('cancel_with_other_credit')->default(0);
             $table->string('dni')->unique();
 			$table->unsignedInteger('seller_id');
             $table->timestamps();

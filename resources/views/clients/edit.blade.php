@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Crear Cliente')
+@section('title', 'Editar Cliente')
 
 @section('main')
     <div class="card">
@@ -72,6 +72,34 @@
 							</option>
 						@endforeach
 						</select>
+                    </div>
+                </div>
+
+				<div class="row">
+                    <div class="form-group col-md-6">
+                        <label for="multi_credit">Multi Credito</label>
+                        <select class="form-control" name="multi_credit" value="{{ $client->multi_credit }}" required>
+                            @if($client->multi_credit == 0)
+                                <option value="0">No</option>
+                                <option value="1">Si</option>
+                            @else
+                                <option value="1">Si</option>
+                                <option value="0">No</option>
+                            @endif
+                        </select>
+                    </div>
+
+                    <div class="form-group col-md-6">
+                        <label for="cancel_with_other_credit">Cancelar credito anterior con nuevo credito</label>
+                        <select class="form-control" name="cancel_with_other_credit" required>
+                            @if($client->cancel_with_other_credit == 0)
+                                <option value="0">No</option>
+                                <option value="1">Si</option>
+                            @else
+                                <option value="1">Si</option>
+                                <option value="0">No</option>
+                            @endif
+                        </select>
                     </div>
                 </div>
 				@endif

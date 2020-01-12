@@ -22,6 +22,9 @@
             <div class="col-md-3"><span class="text-secondary">Fecha de Creacion: </span>{{ $credit->created_at }}</div>
             <div class="col-md-3"><span class="text-secondary">Fecha de Vencimiento: </span>{{ $credit->expiration_date }}</div>
             <div class="col-md-3"><span class="text-secondary">Deuda del Cliente: </span>{{ $debt }}</div>
+            @if($credit->money_to_give != null)
+                <div class="col-md-3"><span class="text-secondary">Dinero a Entregar en Mano: </span>{{ $credit->money_to_give }}</div>
+            @endif
         </div>
         <h3>Cuotas</h3>
         <table class="table table-hover">
@@ -31,7 +34,8 @@
                     <th scope="col">Precio</th>
                     <th scope="col">Vencimiento</th>
                     <th scope="col">Estado</th>
-                    <th scope="col">Firma</th>
+                    <th></th>
+                    <th></th>
                     <th></th>
                 </tr>
             </thead>
@@ -66,10 +70,16 @@
                     <td></td>
                     <td>
                         @if($share->share_cancelled == 1)
+                            <a class="btn btn-primary" href="/shares/{{ $share->id }}">Imprimir</a>
                         @else
                             <a class="btn btn-primary" href="/shares/{{ $share->id }}/share_payments">Informar Pago</a>
+                    </td>
+                        @if($share->payments->count() != 0)
+                    <td>
+                            <a class="btn btn-primary" href="/shares/{{ $share->id }}">Imprimir</a>
                         @endif
                     </td>
+                        @endif
                 </tr>
                 @endforeach
             </tbody>

@@ -111,9 +111,11 @@
                         </div>
                     </div>
 
-                    @if(isset($errorMessage))
-                        <h5>Pagar Credito Pendiente con Nuevo Credito</h5>
+                    @if(isset($credits))
+                    @empty($credits->first())
 
+                    @else
+                        <h4>Cancelar Credito Previo</h4>
                         @foreach($credits as $credit)
                         <?php
                             $debt = 0;
@@ -126,12 +128,18 @@
                                     $debt += $share->money - $payed;
                                 }
                             }
+
                         ?>
                         <div class="form-group">
-                            <input type="radio" name="credit_to_cancel" class="" value="{{ $credit->id }}">
-                            <label for="credit_id_to_cancel" value="{{ $credit->id }}">Deuda: {{ $debt }} <a href="/credits/{{ $credit->id }}">Ver credito</a></label>
+                            <input type="radio" name="cancel_credit" value="{{ $credit->id }}">
+                            <label for="cancel_credit" value="{{ $credit->id }}">Deuda: {{ $debt }} <a href="/credits/{{ $credit->id }}">Ver credito</a></label>
                         </div>
                         @endforeach
+                        <div class="form-group">
+                            <input type="radio" name="cancel_credit" value="null">
+                            <label for="cancel_credit" value="null">Ninguno</label>
+                        </div>
+                    @endif
                     @endif
 
                     <button type="button" id="calculate" class="btn btn-secondary mb-4">Calcular</button>

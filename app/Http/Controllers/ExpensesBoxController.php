@@ -17,6 +17,10 @@ class ExpensesBoxController extends Controller
      */
     public function index()
     {
+        if(Auth::user()->role !== 'admin') {
+            return redirect('/');
+        }
+
         $lastCash = InitialCash::where('active', '=', 1)->get()->last();
         if(empty($lastCash)) {
             return redirect()->back();
@@ -34,6 +38,10 @@ class ExpensesBoxController extends Controller
      */
     public function create()
     {
+        if(Auth::user()->role !== 'admin') {
+            return redirect('/');
+        }
+
         return view('expenses_box.create');
     }
 
@@ -45,6 +53,10 @@ class ExpensesBoxController extends Controller
      */
     public function store(Request $request)
     {
+        if(Auth::user()->role !== 'admin') {
+            return redirect('/');
+        }
+
         $validated = $request->validate([
             'description' => ['required', 'string'],
             'money' => ['required', 'numeric'],
@@ -81,6 +93,10 @@ class ExpensesBoxController extends Controller
      */
     public function show(ExpensesBox $expensesBox)
     {
+        if(Auth::user()->role !== 'admin') {
+            return redirect('/');
+        }
+
         return view('expenses_box.show')->withExpensesBox($expensesBox);
     }
 

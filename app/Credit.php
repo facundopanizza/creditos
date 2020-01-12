@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Credit extends Model
 {
+    protected $guarded = [];
     public function seller() {
         return $this->belongsTo('App\User', 'seller_id');
     }

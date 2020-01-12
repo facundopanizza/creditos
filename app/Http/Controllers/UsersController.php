@@ -357,14 +357,14 @@ class UsersController extends Controller
                 'first_name' => ['string', 'max:255']
             ]);
 
-            $sellers = User::where('first_name', $validated['first_name'])->get();
+            $sellers = User::where('first_name', 'like', '%' . $validated['first_name'] . '%')->get();
             return view('initial_cash.results', ['sellers' => $sellers]);
         } elseif(isset($request->last_name)) {
             $validated = $request->validate([
                 'last_name' => ['string', 'max:255']
             ]);
 
-            $sellers = User::where('last_name', $validated['last_name'])->get();
+            $sellers = User::where('last_name', 'like', '%' . $validated['last_name'] . '%')->get();
             return view('initial_cash.results', ['sellers' => $sellers]);
         } elseif(isset($request->dni)) {
             $validated = $request->validate([

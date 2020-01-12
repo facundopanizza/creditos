@@ -35,6 +35,10 @@ Route::middleware('auth')->group(function() {
     Route::put('/users/{user}/enable', 'UsersController@enable');
     Route::get('/users/{user}/clients', 'UsersController@clientsView');
 
+    Route::get('/pay-to-users', 'SellerPaymentController@payToUsers');
+    Route::get('/seller_payments', 'SellerPaymentController@index');
+    Route::get('/users/{user}/payments/create', 'SellerPaymentController@create');
+    Route::post('/users/{user}/payments', 'SellerPaymentController@store');
 
     Route::resource('clients', 'ClientsController');
     Route::post('/search/clients', 'ClientsController@search');
@@ -44,6 +48,8 @@ Route::middleware('auth')->group(function() {
     Route::get('/clients/{client}/credits/create', 'CreditsController@create');
     Route::get('/shares/{share}/share_payments', 'SharePaymentsController@create');
     Route::post('/shares/{share}/share_payments', 'SharePaymentsController@store');
+    Route::get('/shares/{share}', 'SharePaymentsController@show'); // Print
+    Route::get('/shares/{share}/payment/{sharePayment}', 'SharePaymentsController@print'); // Print
 
     Route::get('/initial_cash', 'InitialCashController@index');
     Route::post('/initial_cash', 'InitialCashController@store');
@@ -56,6 +62,16 @@ Route::middleware('auth')->group(function() {
     Route::get('/close_day', 'InitialCashController@closeDay');
     Route::post('/close_day', 'InitialCashController@closeDayStore');
     Route::get('/closed_days', 'InitialCashController@closedDays');
+    Route::get('/add_money', 'InitialCashController@addMoney');
+    Route::post('/add_money', 'InitialCashController@addMoneyStore');
 
     Route::resource('expenses', 'ExpenseController');
+
+    Route::get('/consult', 'StaticPagesController@consult');
+    Route::post('/consult/seller', 'StaticPagesController@sellerConsult');
+    Route::post('/consult/client', 'StaticPagesController@clientConsult');
+    Route::post('/consult/close_day', 'StaticPagesController@closeDayConsult');
+
+    Route::get('/defaults/maximum_credit', 'DefaultValueController@edit');
+    Route::put('/defaults/maximum_credit', 'DefaultValueController@update');
 });

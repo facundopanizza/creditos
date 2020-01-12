@@ -21,7 +21,7 @@
                 <ul class="navbar-nav mr-auto">
                     @if(Auth::user()->role !== 'admin')
                     @else
-                    <li class="nav-item dropdown">
+                    <li class="nav-item dropdown active">
                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         Caja
                         </a>
@@ -37,27 +37,32 @@
                             <a class="dropdown-item" href="/closed_days">Ver Cajas Cerradas</a>
                         </div>
                     </li>
-                    <li class="nav-item dropdown">
+                    <li class="nav-item dropdown active">
                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        Usuarios
+                        Vendedores
                         </a>
                         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                            <a class="dropdown-item" href="/users">Lista de Usuarios</a>
-                            <a class="dropdown-item" href="/disabled-users">Lista de Usuarios Deshabilitados</a>
+                            <a class="dropdown-item" href="/users">Lista de Vendedores</a>
+                            <a class="dropdown-item" href="/disabled-users">Lista de Vendedores Deshabilitados</a>
+                            <a class="dropdown-item" href="/pay-to-users">Pagar Sueldo a Vendedores</a>
+                            <a class="dropdown-item" href="/seller_payments">Ver Pagos de Sueldos a Vendedores</a>
                             <a class="dropdown-item" href="/register">Crear</a>
                         </div>
                     </li>
                     @endif
-                    <li class="nav-item dropdown">
+                    <li class="nav-item dropdown active">
                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         Clientes
                         </a>
                         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                             <a class="dropdown-item" href="/clients">Lista de Clientes</a>
                             <a class="dropdown-item" href="/clients/create">Crear</a>
+                            @if(Auth::user()->role == 'admin')
+                            <a class="dropdown-item" href="/defaults/maximum_credit">Modificar valor default de prestamo maximo</a>
+                            @endif
                         </div>
                     </li>
-                    <div class="nav-item dropdown">
+                    <li class="nav-item dropdown active">
                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         Creditos
                         </a>
@@ -65,22 +70,34 @@
                             <a class="dropdown-item" href="/credits">Lista de Creditos</a>
                             <a class="dropdown-item" href="/credits/create">Nuevo Credito</a>
                         </div>
-                    </div>
+                    </li>
+                    <li class="nav-item active">
+                        <a class="nav-link" href="/consult">
+                        Consultar
+                        </a>
+                    </li>
                 </ul>
 
-                <div class="nav-item text-light mr-3">
-                    {{ Auth::user()->first_name . ' ' . Auth::user()->last_name }}
-                </div>
+                <ul class="navbar-nav">
+                    <li class="nav-item dropdown active">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        {{ Auth::user()->first_name . ' ' . Auth::user()->last_name }}
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <a class="dropdown-item" href="/expenses">Gastos Vendedor</a>
+                            <a class="dropdown-item" href="/disabled-users">Lista de Vendedores Deshabilitados</a>
+                            <a class="dropdown-item">
+                                <form method="POST" action="/logout">
+                                    @csrf
+                                    
+                                    <button type="submit" class="" style="padding-left: 0px; background-color: transparent; border: none">Cerrar Sesión</button>
+                                </form>
+                            </a>
+                        </div>
+                    </li>
+                </ul>
                 <div class="nav-item text-light">
                     Saldo: {{ Auth::user()->wallet }}
-                </div>
-                <a class="nav-link text-light" href="/expenses">Gastos Vendedor</a>
-                <div class="nav-item">
-                    <form method="POST" action="/logout">
-                        @csrf
-                        
-                        <button type="submit" class="nav-link text-light" style="background-color: transparent; border: none">Cerrar Sesión</button>
-                    </form>
                 </div>
             </div>
             @endguest

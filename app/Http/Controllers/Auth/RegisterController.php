@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\DefaultValue;
 use App\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -76,6 +77,8 @@ class RegisterController extends Controller
         if(Auth::user()->role !== 'admin') {
             return redirect('/');
         }
+
+        $maximum_credit = DefaultValue::where('column_name', 'maximum_credit')->first();
 
         return User::create([
             'first_name' => $data['first_name'],

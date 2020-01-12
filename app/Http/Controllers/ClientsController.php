@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\User;
 use App\Client;
+use App\DefaultValue;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -70,6 +71,8 @@ class ClientsController extends Controller
             'dni' => ['required', 'string', 'unique:clients'],
         ]);
 
+        $maximum_credit = DefaultValue::where('column_name', 'maximum_credit')->first();
+
 		Client::create([
 			'first_name' => $validated['first_name'],
 			'last_name' => $validated['last_name'],
@@ -79,7 +82,8 @@ class ClientsController extends Controller
 			'business_address' => $validated['business_address'],
 			'home_address' => $validated['home_address'],
 			'dni' => $validated['dni'],
-			'seller_id' => Auth::user()->id,
+            'seller_id' => Auth::user()->id,
+            'maximum_credit' => intval($maximum_credit->value),
 		]);
 
         return redirect('/clients');
@@ -154,6 +158,8 @@ class ClientsController extends Controller
             'maximum_credit' => ['integer'],
             'dni' => ['required', 'string'],
 			'seller_id' => ['required', 'integer'],
+			'multi_credit' => ['required', 'boolean'],
+			'cancel_with_other_credit' => ['required', 'boolean'],
         ]);
 
         $checkDni = User::where('dni', $validated['dni'])->get();
@@ -174,6 +180,8 @@ class ClientsController extends Controller
 		if(Auth::user()->role == 'admin') {
 			$client->maximum_credit = $validated['maximum_credit'];
 			$client->seller_id = $validated['seller_id'];
+            $client->multi_credit = $validated['multi_credit'];
+            $client->cancel_with_other_credit = $validated['cancel_with_other_credit'];
 		}
 
         $client->save();
@@ -206,14 +214,14 @@ class ClientsController extends Controller
 					'first_name' => ['string', 'max:255']
 				]);
 
-				$clients = Client::where('first_name', $validated['first_name'])->get();
+				$clients = Client::where('first_name', 'like', '%' . $validated['first_name'] . '%')->get();
 				return view('search.results', ['clients' => $clients]);
 			} elseif(isset($request->last_name)) {
 				$validated = $request->validate([
 					'last_name' => ['string', 'max:255']
 				]);
 
-				$clients = Client::where('last_name', $validated['last_name'])->get();
+				$clients = Client::where('last_name', 'like', '%' . $validated['last_name'] . '%')->get();
 				return view('search.results', ['clients' => $clients]);
 			} elseif(isset($request->dni)) {
 				$validated = $request->validate([
