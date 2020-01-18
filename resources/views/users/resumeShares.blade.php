@@ -17,74 +17,78 @@
         </div>
 
         <h3>Cuotas Cobradas</h3>
-        <table class="table table-hover">
+		<div class="table-responsive">
+			<table class="table table-hover">
 
-            <thead>
-                <tr>
-                    <th scope="col">#</th>
-                    <th scope="col">Monto</th>
-                    <th scope="col">Numero de Cuota</th>
-                    <th scope="col">Cliente</th>
-                    <th scope="col">Fecha</th>
-                </tr>
-            </thead>
+				<thead>
+					<tr>
+						<th scope="col">#</th>
+						<th scope="col">Monto</th>
+						<th scope="col">Numero de Cuota</th>
+						<th scope="col">Cliente</th>
+						<th scope="col">Fecha</th>
+					</tr>
+				</thead>
 
-            <tbody>
-			<?php
-				$count = 0;
-			?>
-			@foreach($shares->allPayed->sortByDesc('created_at') as $share)
+				<tbody>
 				<?php
-					$count += 1;
+					$count = 0;
 				?>
-				<tr>
-					<td>{{ $count }}</td>
-					<td>{{ $share->payment_amount }}</td>
-					<td>{{ $share->share->share_number }}</td>
-					<td>{{ $share->share->credit->client->first_name . ' ' . $share->share->credit->client->last_name }}</td>
-					<td>{{ $share->created_at }}</td>
-				</tr>
-			@endforeach
-				<tr>
-					<td>Total: {{ $shares->paymentsAmount }}</td>
-				</tr>
-            </tbody>
-		</table>
+				@foreach($shares->allPayed->sortByDesc('created_at') as $share)
+					<?php
+						$count += 1;
+					?>
+					<tr>
+						<td>{{ $count }}</td>
+						<td>{{ $share->payment_amount }}</td>
+						<td>{{ $share->share->share_number }}</td>
+						<td>{{ $share->share->credit->client->first_name . ' ' . $share->share->credit->client->last_name }}</td>
+						<td>{{ $share->created_at }}</td>
+					</tr>
+				@endforeach
+					<tr>
+						<td>Total: {{ $shares->paymentsAmount }}</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
 
         <h3>Cuotas Vencidas</h3>
-        <table class="table table-hover">
+		<div class="table-responsive">
+			<table class="table table-hover">
 
-            <thead>
-                <tr>
-                    <th scope="col">#</th>
-                    <th scope="col">Monto</th>
-                    <th scope="col">Numero de Cuota</th>
-                    <th scope="col">Cliente</th>
-                    <th scope="col">Fecha</th>
-                </tr>
-            </thead>
+				<thead>
+					<tr>
+						<th scope="col">#</th>
+						<th scope="col">Monto</th>
+						<th scope="col">Numero de Cuota</th>
+						<th scope="col">Cliente</th>
+						<th scope="col">Fecha</th>
+					</tr>
+				</thead>
 
-            <tbody>
-			<?php
-				$count = 0;
-			?>
-			@foreach($shares->allExpired->sortByDesc('created_at') as $share)
+				<tbody>
 				<?php
-					$count += 1;
+					$count = 0;
 				?>
-				<tr>
-					<td>{{ $count }}</td>
-					<td>{{ $share->money }}</td>
-					<td>{{ $share->share_number }}</td>
-					<td>{{ $share->credit->client->first_name . ' ' . $share->credit->client->last_name }}</td>
-					<td>{{ $share->created_at }}</td>
-				</tr>
-			@endforeach
-				<tr>
-					<td>Total: {{ $shares->expiredAmount }}</td>
-				</tr>
-            </tbody>
-		</table>
+				@foreach($shares->allExpired->sortByDesc('created_at') as $share)
+					<?php
+						$count += 1;
+					?>
+					<tr>
+						<td>{{ $count }}</td>
+						<td>{{ $share->money }}</td>
+						<td>{{ $share->share_number }}</td>
+						<td>{{ $share->credit->client->first_name . ' ' . $share->credit->client->last_name }}</td>
+						<td>{{ $share->created_at }}</td>
+					</tr>
+				@endforeach
+					<tr>
+						<td>Total: {{ $shares->expiredAmount }}</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
 	</div>
 </div>
 @endsection

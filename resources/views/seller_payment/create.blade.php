@@ -23,22 +23,24 @@
 
             @if(!empty($seller->payments->first()))
             <h3 class="my-3">Pagos</h3>
-            <table class="table table-hover">
-            <thead>
-                <tr>
-                    <th scope="col">Monto</th>
-                    <th scope="col">Fecha</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach($seller->payments as $payment)
-                <tr>
-                    <td>{{ $payment->payment_amount }}</td>
-                    <td>{{ $payment->created_at }}</td>
-                </tr>
-                @endforeach
-            </tbody>
-            </table>
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th scope="col">Monto</th>
+                            <th scope="col">Fecha</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($seller->payments as $payment)
+                        <tr>
+                            <td>{{ $payment->payment_amount }}</td>
+                            <td>{{ $payment->created_at }}</td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
             @endif
         </div>
     </div>

@@ -69,7 +69,6 @@ class CreditsController extends Controller
             'interest_rate' => ['required', 'numeric'],
             'daily' => ['required', 'regex:/21|28|42|56/'],
             'period' => ['required', 'regex:/1|7|14|28/'],
-            'cancel_credit' => ['required'],
         ]);
 
         $client = Client::find($validated['client_id']);

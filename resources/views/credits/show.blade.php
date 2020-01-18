@@ -27,62 +27,64 @@
             @endif
         </div>
         <h3>Cuotas</h3>
-        <table class="table table-hover">
-            <thead>
-                <tr>
-                    <th scope="col">Numero de Cuota</th>
-                    <th scope="col">Precio</th>
-                    <th scope="col">Vencimiento</th>
-                    <th scope="col">Estado</th>
-                    <th></th>
-                    <th></th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach($credit->shares as $share)
-                <tr>
-                    <td>{{ $share->share_number }}</td>
-                    <td>{{ $share->money }}</td>
-                    <td>{{ $share->expiration_date }} </td>
-                    <td>
-                    @if(!empty($share->payments))
-                        @if($share->share_cancelled == 1)
-                            <span class="text-success">{{ 'Pagado' }}</span>
-                        @else
-                            <?php
-                                if($share->payments->count() != 0) {
-                                    $payed = 0;
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th scope="col">Numero de Cuota</th>
+                        <th scope="col">Precio</th>
+                        <th scope="col">Vencimiento</th>
+                        <th scope="col">Estado</th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($credit->shares as $share)
+                    <tr>
+                        <td>{{ $share->share_number }}</td>
+                        <td>{{ $share->money }}</td>
+                        <td>{{ $share->expiration_date }} </td>
+                        <td>
+                        @if(!empty($share->payments))
+                            @if($share->share_cancelled == 1)
+                                <span class="text-success">{{ 'Pagado' }}</span>
+                            @else
+                                <?php
+                                    if($share->payments->count() != 0) {
+                                        $payed = 0;
 
-                                    foreach($share->payments as $payment) {
-                                        $payed += $payment->payment_amount;
+                                        foreach($share->payments as $payment) {
+                                            $payed += $payment->payment_amount;
+                                        }
+                                    } else {
+                                        $payed = 0;
                                     }
-                                } else {
-                                    $payed = 0;
-                                }
-                            ?>
-                            <span class="text-danger">{{ 'Debe - ' . floatval($share->money - $payed) }}</span>
-                        @endif
-                    @else
-                        <span class="text-danger">{{ 'Debe - ' . $share->money }}</span>
-                    @endif
-                    </td>
-                    <td></td>
-                    <td>
-                        @if($share->share_cancelled == 1)
-                            <a class="btn btn-primary" href="/shares/{{ $share->id }}">Imprimir</a>
+                                ?>
+                                <span class="text-danger">{{ 'Debe - ' . floatval($share->money - $payed) }}</span>
+                            @endif
                         @else
-                            <a class="btn btn-primary" href="/shares/{{ $share->id }}/share_payments">Informar Pago</a>
-                    </td>
-                        @if($share->payments->count() != 0)
-                    <td>
-                            <a class="btn btn-primary" href="/shares/{{ $share->id }}">Imprimir</a>
+                            <span class="text-danger">{{ 'Debe - ' . $share->money }}</span>
                         @endif
-                    </td>
-                        @endif
-                </tr>
-                @endforeach
-            </tbody>
-        </table>
+                        </td>
+                        <td></td>
+                        <td>
+                            @if($share->share_cancelled == 1)
+                                <a class="btn btn-primary" href="/shares/{{ $share->id }}">Imprimir</a>
+                            @else
+                                <a class="btn btn-primary" href="/shares/{{ $share->id }}/share_payments">Informar Pago</a>
+                        </td>
+                            @if($share->payments->count() != 0)
+                        <td>
+                                <a class="btn btn-primary" href="/shares/{{ $share->id }}">Imprimir</a>
+                            @endif
+                        </td>
+                            @endif
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
     </div>
 @endsection

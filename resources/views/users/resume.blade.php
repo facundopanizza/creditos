@@ -15,72 +15,79 @@
         </div>
 
         <h3>Cuotas del día</h3>
-        <table class="table table-hover">
-            <thead>
-                <tr>
-                    <th scope="col"><a class="btn-sm btn-primary" href="/users/{{ $user->id  }}/resume/shares">Ver Cuotas</a></th>
-                    <th scope="col">Cantidad</th>
-                    <th scope="col">Monto</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>Cobradas</td>
-                    <td>{{ $shares->paymentsCount }}</td>
-                    <td>{{ $shares->paymentsAmount }}</td>
-                </tr>
-                <tr>
-                    <td>En Mora</td>
-                    <td>{{ $shares->expiredCount }}</td>
-                    <td>{{ $shares->expiredAmount }}</td>
-                </tr>
-            </tbody>
-        </table>
+        <div class="table-responsive">
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th scope="col"><a class="btn-sm btn-primary" href="/users/{{ $user->id  }}/resume/shares">Ver Cuotas</a></th>
+                        <th scope="col">Cantidad</th>
+                        <th scope="col">Monto</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Cobradas</td>
+                        <td>{{ $shares->paymentsCount }}</td>
+                        <td>{{ $shares->paymentsAmount }}</td>
+                    </tr>
+                    <tr>
+                        <td>En Mora</td>
+                        <td>{{ $shares->expiredCount }}</td>
+                        <td>{{ $shares->expiredAmount }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
 
         <h3>Creditos del día</h3>
-        <table class="table table-hover">
-            <thead>
-                <tr>
-                    <th scope="col"><a class="btn-sm btn-primary" href="/users/{{ $user->id  }}/resume/credits">Ver Creditos</a></th>
-                    <th>Cantidad</th>
-                    <th>Monto Prestado</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td scope="col">Otorgados</td>
-                    <td>{{ $credits->todayCount }}</td>
-                    <td>{{ $credits->todayMoney }}</td>
-                </tr>
-                <tr>
-                    <td scope="col">Cancelados</td>
-                    <td>{{ $credits->cancelledCount }}</td>
-                    <td>{{ $credits->cancelledMoney }}</td>
-                </tr>
-                <tr>
-                    <td scope="col">En Mora</td>
-                    <td>{{ $credits->expiredCount }}</td>
-                    <td>{{ $credits->expiredMoney }}</td>
-                </tr>
-            </tbody>
-        </table>
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th scope="col"><a class="btn-sm btn-primary" href="/users/{{ $user->id  }}/resume/credits">Ver Creditos</a></th>
+                        <th>Cantidad</th>
+                        <th>Monto Prestado</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td scope="col">Otorgados</td>
+                        <td>{{ $credits->todayCount }}</td>
+                        <td>{{ $credits->todayMoney }}</td>
+                    </tr>
+                    <tr>
+                        <td scope="col">Cancelados</td>
+                        <td>{{ $credits->cancelledCount }}</td>
+                        <td>{{ $credits->cancelledMoney }}</td>
+                    </tr>
+                    <tr>
+                        <td scope="col">En Mora</td>
+                        <td>{{ $credits->expiredCount }}</td>
+                        <td>{{ $credits->expiredMoney }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
         <h3>Gastos del día</h3>
-        <table class="table table-hover">
-            <thead>
-                <tr>
-                    <th scope="col"><a class="btn-sm btn-primary" href="/users/{{ $user->id  }}/resume/expenses">Ver Gastos</a></th>
-                    <th scope="col">Cantidad</th>
-                    <th scope="col">Monto</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>Gastos</td>
-                    <td>{{ $expenses->expensesCount }}</td>
-                    <td>{{ $expenses->expensesMoney }}</td>
-                </tr>
-            </tbody>
-        </table>
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th scope="col"><a class="btn-sm btn-primary" href="/users/{{ $user->id  }}/resume/expenses">Ver Gastos</a></th>
+                        <th scope="col">Cantidad</th>
+                        <th scope="col">Monto</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Gastos</td>
+                        <td>{{ $expenses->expensesCount }}</td>
+                        <td>{{ $expenses->expensesMoney }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 
 	@if($user->wallet != 0)
