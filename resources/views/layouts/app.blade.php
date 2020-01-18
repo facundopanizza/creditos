@@ -30,10 +30,10 @@
                             <?php
                                 $lastDay = App\InitialCash::all()->last();
                             ?>
+                            <a class="dropdown-item" href="/cash_entries">Recibir dinero de Vendedor</a>
                             @if($lastDay !== null && $lastDay->active !== 0)
                                 <a class="dropdown-item" href="/close_day">Cerrar Caja Diaria</a>
                             @endif
-                            <a class="dropdown-item" href="/cash_entries">Recibir dinero de Vendedor</a>
                             <a class="dropdown-item" href="/closed_days">Ver Cajas Cerradas</a>
                         </div>
                     </li>
@@ -42,11 +42,11 @@
                         Vendedores
                         </a>
                         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <a class="dropdown-item" href="/register">Crear</a>
                             <a class="dropdown-item" href="/users">Lista de Vendedores</a>
                             <a class="dropdown-item" href="/disabled-users">Lista de Vendedores Deshabilitados</a>
                             <a class="dropdown-item" href="/pay-to-users">Pagar Sueldo a Vendedores</a>
                             <a class="dropdown-item" href="/seller_payments">Ver Pagos de Sueldos a Vendedores</a>
-                            <a class="dropdown-item" href="/register">Crear</a>
                         </div>
                     </li>
                     @endif
@@ -55,8 +55,8 @@
                         Clientes
                         </a>
                         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                            <a class="dropdown-item" href="/clients">Lista de Clientes</a>
                             <a class="dropdown-item" href="/clients/create">Crear</a>
+                            <a class="dropdown-item" href="/clients">Lista de Clientes</a>
                             @if(Auth::user()->role == 'admin')
                             <a class="dropdown-item" href="/defaults/maximum_credit">Modificar valor default de prestamo maximo</a>
                             @endif
@@ -67,8 +67,8 @@
                         Creditos
                         </a>
                         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                            <a class="dropdown-item" href="/credits">Lista de Creditos</a>
                             <a class="dropdown-item" href="/credits/create">Nuevo Credito</a>
+                            <a class="dropdown-item" href="/credits">Lista de Creditos</a>
                         </div>
                     </li>
                     <li class="nav-item active">
@@ -85,7 +85,6 @@
                         </a>
                         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                             <a class="dropdown-item" href="/expenses">Gastos Vendedor</a>
-                            <a class="dropdown-item" href="/disabled-users">Lista de Vendedores Deshabilitados</a>
                             <a class="dropdown-item">
                                 <form method="POST" action="/logout">
                                     @csrf
