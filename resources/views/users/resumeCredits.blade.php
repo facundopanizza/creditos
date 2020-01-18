@@ -18,7 +18,7 @@
         </div>
 
         <h3>Creditos Otorgados</h3>
-		<div class="table-responsive">
+		<div class="table-responsive-md">
 			<table class="table table-hover">
 
 				<thead>
@@ -59,7 +59,7 @@
 		</div>
 
         <h3>Creditos Cancelados</h3>
-		<div class="table-responsive">
+		<div class="table-responsive-md">
 			<table class="table table-hover">
 
 				<thead>
@@ -100,7 +100,7 @@
 		</div>
 
         <h3>Creditos en Mora</h3>
-		<div class="table-responsive">
+		<div class="table-responsive-md">
 			<table class="table table-hover">
 
 				<thead>

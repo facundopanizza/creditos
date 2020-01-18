@@ -5,7 +5,7 @@
 @section('title', 'Estadísticas')
 @section('main')
     <h3 class="mt-2">Cuotas Vencidas</h3>
-    <div class="table-responsive">
+    <div class="table-responsive-md">
         <table class="table table-hover">
             <thead>
                 <tr class="bg-danger text-white">
@@ -42,7 +42,7 @@
     <hr>
 
     <h3 class="mt-2">Cuotas a Cobrar Hoy</h3>
-    <div class="table-responsive">
+    <div class="table-responsive-md">
         <table class="table table-hover">
             <thead>
                 <tr>

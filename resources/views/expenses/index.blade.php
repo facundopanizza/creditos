@@ -3,7 +3,7 @@
 @section('title', 'Gastos del Día')
 
 @section('main')
-<div class="table-responsive">
+<div class="table-responsive-md">
     <table class="table table-hover">
         <thead>
             <tr>

@@ -17,7 +17,7 @@
         </div>
 
         <h3>Gastos</h3>
-		<div class="table-responsive">
+		<div class="table-responsive-md">
 			<table class="table table-hover">
 				<thead>
 					<tr>

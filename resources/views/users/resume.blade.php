@@ -15,8 +15,8 @@
         </div>
 
         <h3>Cuotas del día</h3>
-        <div class="table-responsive">
-        <div class="table-responsive">
+        <div class="table-responsive-md">
+        <div class="table-responsive-md">
             <table class="table table-hover">
                 <thead>
                     <tr>
@@ -41,7 +41,7 @@
         </div>
 
         <h3>Creditos del día</h3>
-        <div class="table-responsive">
+        <div class="table-responsive-md">
             <table class="table table-hover">
                 <thead>
                     <tr>
@@ -70,7 +70,7 @@
             </table>
         </div>
         <h3>Gastos del día</h3>
-        <div class="table-responsive">
+        <div class="table-responsive-md">
             <table class="table table-hover">
                 <thead>
                     <tr>

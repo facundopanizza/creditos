@@ -23,7 +23,7 @@
 
             @if(!empty($seller->payments->first()))
             <h3 class="my-3">Pagos</h3>
-            <div class="table-responsive">
+            <div class="table-responsive-md">
                 <table class="table table-hover">
                     <thead>
                         <tr>

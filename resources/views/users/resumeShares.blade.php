@@ -17,7 +17,7 @@
         </div>
 
         <h3>Cuotas Cobradas</h3>
-		<div class="table-responsive">
+		<div class="table-responsive-md">
 			<table class="table table-hover">
 
 				<thead>
@@ -54,7 +54,7 @@
 		</div>
 
         <h3>Cuotas Vencidas</h3>
-		<div class="table-responsive">
+		<div class="table-responsive-md">
 			<table class="table table-hover">
 
 				<thead>
