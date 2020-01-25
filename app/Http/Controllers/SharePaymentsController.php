@@ -3,11 +3,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Expense;
 use App\Share;
+use App\Expense;
 use App\SharePayment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
 
 class SharePaymentsController extends Controller
 {
@@ -79,6 +80,10 @@ class SharePaymentsController extends Controller
             ]);
             $share->share_cancelled = true;
             $share->save();
+        } else if($share->money < ($validated['payment_amount'] + $payed)) {
+			$validator = Validator::make([], []);
+			$validator->getMessageBag()->add('payment_amount', 'El monto de pago no puede superar la deuda total.');
+			return redirect()->back()->withErrors($validator)->withInput();
         } else {
             $sharePayment = SharePayment::create([
                 'share_id' => $share->id,
@@ -100,6 +105,12 @@ class SharePaymentsController extends Controller
         }
 
         $id = $share->credit->id;
+
+        if($share->money < ($validated['payment_amount'] + $payed)) {
+			$validator = Validator::make([], []);
+			$validator->getMessageBag()->add('payment_amount', 'El monto de pago no puede superar la deuda total.');
+			return redirect()->back()->withErrors($validator)->withInput();
+        }
 
         Expense::create([
             'seller_id' => Auth::user()->id,
