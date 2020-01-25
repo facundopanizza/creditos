@@ -33,9 +33,11 @@
                     </div>
                     <div class="form-group col-md">
                         <label for="payment_amount">Cantidad del Pago</label>
-                        <input id="payment_amount" type="number" class="form-control @error('payment_amount') is-danger @enderror" name="payment_amount" value="{{ old('payment_amount') }}" required>
+                        <input id="payment_amount" type="number" class="form-control @error('payment_amount') is-invalid @enderror" name="payment_amount" value="{{ old('payment_amount') }}" required>
                         @error('payment_amount')
-                            {{ $message }}
+                            <div class="invalid-feedback">
+                                {{ $message }}
+                            </div>
                         @enderror
                     </div>
                     <div class="form-group col-md">
