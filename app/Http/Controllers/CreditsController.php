@@ -205,9 +205,9 @@ class CreditsController extends Controller
         $moneyCancel = 0;
         $payedCancel = 0;
 
-        if($client->cancel_with_other_credit == 1 && $validated['cancel_credit'] != 'null')
+        if($client->cancel_with_other_credit == 1 && $request['cancel_credit'] != 'null')
         {
-            $creditToCancel = Credit::findOrFail($validated['cancel_credit']);
+            $creditToCancel = Credit::findOrFail($request['cancel_credit']);
 
             if($activeCredits->count() > 0) {
                 $payed = 0;
@@ -221,13 +221,13 @@ class CreditsController extends Controller
                         foreach($share->payments as $payment) {
                             $payed += $payment->payment_amount;
 
-                            if($activeCredit->id == $validated['cancel_credit'])
+                            if($activeCredit->id == $request['cancel_credit'])
                             {
                                 $payedCancel += $payment->payment_amount;
                             }
                         }
 
-                        if($activeCredit->id == $validated['cancel_credit'])
+                        if($activeCredit->id == $request['cancel_credit'])
                         {
                             $moneyCancel += $share->money;
                         }
@@ -327,7 +327,7 @@ class CreditsController extends Controller
                 if($i == 0) {
                     if($today->isoFormat('dddd') == 'Saturday' || $today->isoFormat('dddd') == 'Sunday') {
                         while($share_expiration->isoFormat('dddd') == 'Saturday' || $share_expiration->isoFormat('dddd') == 'Sunday') {
-                            $share_expiration->addDays($validated['period']);
+                            $share_expiration->addDay();
                         }
                     }
                 } else {

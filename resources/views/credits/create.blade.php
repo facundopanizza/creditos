@@ -111,9 +111,9 @@
                         </div>
                     </div>
 
+                    <input type="hidden" name="cancel_credit" value="null">
                     @if(isset($credits))
                     @empty($credits->first())
-
                     @else
                         <h4>Cancelar Credito Previo</h4>
                         @foreach($credits as $credit)
