@@ -441,7 +441,7 @@ class CreditsController extends Controller
             if($i == 0) {
                 if($today->isoFormat('dddd') == 'Saturday' || $today->isoFormat('dddd') == 'Sunday') {
                     while($share_expiration->isoFormat('dddd') == 'Saturday' || $share_expiration->isoFormat('dddd') == 'Sunday') {
-                        $share_expiration->addDays($validated['period']);
+                        $share_expiration->addDay();
                     }
                 }
             } else {
